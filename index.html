@@ -1,0 +1,1298 @@
+<!doctype html>
+<!-- Déclare que le document est du HTML moderne (HTML5). -->
+<html lang="fr">
+<!-- Ouvre le document et indique que sa langue est le français. -->
+<head>
+<!-- Ouvre l'en-tête : informations sur la page, invisibles à l'écran. -->
+<meta charset="utf-8">
+<!-- Utilise l'encodage UTF-8 pour afficher correctement les accents. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Adapte la largeur de la page à celle de l'écran du téléphone, sans zoom au départ. -->
+<meta name="theme-color" content="#040705">
+<!-- Colore la barre du navigateur, et la barre d'état de l'application installée, en noir. -->
+<link rel="manifest" href="manifest.webmanifest">
+<!-- Relie le fichier d'installation qui donne à l'application son nom et ses icônes. -->
+<link rel="icon" href="icon-192.png" type="image/png">
+<!-- Définit l'icône affichée dans l'onglet du navigateur. -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- Définit l'icône utilisée par l'iPhone pour l'écran d'accueil. -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- Permet à l'iPhone d'ouvrir l'application en plein écran, sans barre Safari. -->
+<meta name="mobile-web-app-capable" content="yes">
+<!-- Fait la même chose sur Android avec Chrome. -->
+<meta name="apple-mobile-web-app-title" content="Budget Néon">
+<!-- Fixe le nom affiché sous l'icône sur iPhone. -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<!-- Affiche la barre d'état de l'iPhone en noir, au-dessus du contenu. -->
+<title>Budget Néon</title>
+<!-- Titre de l'onglet et nom de la page : "Budget Néon". -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Unbounded:wght@500;700&display=swap">
+<!-- Charge deux polices Google : Manrope pour le texte, Unbounded pour les titres et les montants. -->
+<style>
+/* Ouvre le bloc de styles CSS : tout ce qui suit décrit l'apparence de la page. */
+
+/* Mise en page : une seule colonne centrée, pensée d'abord pour un écran de téléphone. */
+/* Commentaire de plan : les cartes sont empilées de haut en bas (résumé, formulaire, liste). */
+
+:root {
+/* Sélectionne la racine du document : on y déclare les couleurs et polices réutilisables (variables). */
+  --noir: #040705;
+  /* Couleur de fond de la page : un noir très légèrement teinté de vert. */
+  --surface: #0b120d;
+  /* Couleur de fond des cartes : un noir un peu plus clair que le fond. */
+  --surface-2: #121b15;
+  /* Couleur de fond des petits blocs posés sur les cartes. */
+  --ligne: #1d2a21;
+  /* Couleur des fines bordures et séparateurs. */
+  --texte: #e8f4ec;
+  /* Couleur du texte principal : un blanc légèrement verdi. */
+  --texte-doux: #8aa092;
+  /* Couleur du texte secondaire (libellés, dates, indications). */
+  --neon: #39ff88;
+  /* Le vert néon, couleur d'accent de toute l'application. */
+  --neon-halo: rgba(57, 255, 136, 0.25);
+  /* Le même vert, transparent à 25 %, utilisé pour l'effet de lueur. */
+  --neon-fond: rgba(57, 255, 136, 0.1);
+  /* Le même vert, transparent à 10 %, utilisé comme fond discret. */
+  --depense: #ff6b81;
+  /* Rouge rosé qui désigne les dépenses, pour les distinguer des revenus. */
+  --police-titre: 'Unbounded', 'Arial Black', sans-serif;
+  /* Police des titres et montants, avec des polices de secours si Unbounded ne charge pas. */
+  --police-texte: 'Manrope', system-ui, sans-serif;
+  /* Police du texte courant, avec des polices de secours. */
+  color-scheme: dark;
+  /* Indique au navigateur que la page est sombre : les champs et barres de défilement suivent. */
+}
+/* Fin de la règle :root. */
+
+* {
+/* Sélectionne tous les éléments de la page. */
+  box-sizing: border-box;
+  /* Inclut les marges intérieures et bordures dans la largeur déclarée, ce qui évite les débordements. */
+}
+/* Fin de la règle universelle. */
+
+[hidden] {
+/* Sélectionne tout élément portant l'attribut "hidden". */
+  display: none !important;
+  /* Force le masquage même si une autre règle CSS impose un affichage (flex, grid...). */
+}
+/* Fin de la règle [hidden]. */
+
+body {
+/* Sélectionne le corps de la page. */
+  margin: 0;
+  /* Supprime la marge par défaut du navigateur autour de la page. */
+  background: radial-gradient(70% 280px at 50% 0%, var(--neon-fond), transparent), var(--noir);
+  /* Dessine une lueur verte en haut de page, par-dessus le fond noir. */
+  color: var(--texte);
+  /* Applique la couleur de texte principale. */
+  font-family: var(--police-texte);
+  /* Applique la police Manrope. */
+  font-size: 15px;
+  /* Fixe la taille de texte de base à 15 pixels. */
+  line-height: 1.5;
+  /* Règle la hauteur de ligne à 1,5 fois la taille du texte pour une lecture aérée. */
+  padding-block: 20px 48px;
+  /* Ajoute 20 px de marge intérieure en haut et 48 px en bas. */
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  /* Marge gauche d'au moins 16 px, plus grande si le téléphone a une encoche à gauche. */
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  /* Marge droite d'au moins 16 px, plus grande si le téléphone a une encoche à droite. */
+}
+/* Fin de la règle body. */
+
+.app {
+/* Sélectionne le conteneur principal (classe "app"). */
+  max-width: 480px;
+  /* Limite la largeur à 480 px pour que l'interface reste lisible sur grand écran. */
+  margin: 0 auto;
+  /* Centre horizontalement le conteneur (marges automatiques à gauche et à droite). */
+  display: flex;
+  /* Active la disposition flexible pour empiler les enfants. */
+  flex-direction: column;
+  /* Empile les enfants verticalement, de haut en bas. */
+  gap: 16px;
+  /* Laisse 16 px d'espace entre chaque bloc. */
+}
+/* Fin de la règle .app. */
+
+.surtitre {
+/* Sélectionne la petite ligne au-dessus du titre. */
+  margin: 0;
+  /* Supprime la marge par défaut du paragraphe. */
+  color: var(--neon);
+  /* Colore le texte en vert néon. */
+  font-size: 11px;
+  /* Réduit la taille du texte à 11 px. */
+  font-weight: 700;
+  /* Met le texte en gras. */
+  letter-spacing: 0.18em;
+  /* Espace les lettres pour un effet d'étiquette. */
+  text-transform: uppercase;
+  /* Transforme le texte en majuscules. */
+}
+/* Fin de la règle .surtitre. */
+
+h1 {
+/* Sélectionne le titre principal de la page. */
+  margin: 4px 0 0;
+  /* Marge de 4 px en haut seulement, rien sur les côtés ni en bas. */
+  font-family: var(--police-titre);
+  /* Utilise la police Unbounded pour le titre. */
+  font-size: 26px;
+  /* Fixe la taille du titre à 26 px. */
+  font-weight: 700;
+  /* Met le titre en gras. */
+  text-wrap: balance;
+  /* Équilibre la longueur des lignes si le titre passe sur plusieurs lignes. */
+}
+/* Fin de la règle h1. */
+
+h2 {
+/* Sélectionne les titres de section. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  font-family: var(--police-titre);
+  /* Utilise la police Unbounded. */
+  font-size: 15px;
+  /* Fixe la taille à 15 px. */
+  font-weight: 500;
+  /* Utilise une graisse moyenne. */
+}
+/* Fin de la règle h2. */
+
+.carte {
+/* Sélectionne toutes les cartes (résumé et formulaire). */
+  background: var(--surface);
+  /* Fond de carte, un peu plus clair que la page. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine de 1 px. */
+  border-radius: 20px;
+  /* Arrondit les coins à 20 px. */
+  padding: 20px;
+  /* Ajoute 20 px de marge intérieure sur les quatre côtés. */
+}
+/* Fin de la règle .carte. */
+
+.solde-libelle {
+/* Sélectionne le mot "Solde" au-dessus du montant. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  color: var(--texte-doux);
+  /* Utilise la couleur de texte secondaire. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+  letter-spacing: 0.12em;
+  /* Espace légèrement les lettres. */
+  text-transform: uppercase;
+  /* Met le texte en majuscules. */
+}
+/* Fin de la règle .solde-libelle. */
+
+.solde-montant {
+/* Sélectionne le grand montant du solde. */
+  margin: 6px 0 18px;
+  /* Marge de 6 px au-dessus et 18 px en dessous. */
+  font-family: var(--police-titre);
+  /* Utilise la police Unbounded pour le chiffre. */
+  font-size: 32px;
+  /* Fixe une grande taille de 32 px. */
+  font-weight: 700;
+  /* Met le chiffre en gras. */
+  color: var(--neon);
+  /* Colore le solde en vert néon quand il est positif. */
+  text-shadow: 0 0 22px var(--neon-halo);
+  /* Ajoute une lueur verte autour des chiffres (effet néon). */
+  font-variant-numeric: tabular-nums;
+  /* Donne la même largeur à tous les chiffres pour un alignement stable. */
+  overflow-wrap: anywhere;
+  /* Autorise le retour à la ligne si le montant est très long. */
+}
+/* Fin de la règle .solde-montant. */
+
+.solde-montant.negatif {
+/* Sélectionne le solde lorsqu'il porte aussi la classe "negatif". */
+  color: var(--depense);
+  /* Passe le montant en rouge rosé. */
+  text-shadow: 0 0 22px rgba(255, 107, 129, 0.25);
+  /* Remplace la lueur verte par une lueur rouge rosé. */
+}
+/* Fin de la règle .solde-montant.negatif. */
+
+.duo {
+/* Sélectionne la rangée qui contient Revenus et Dépenses. */
+  display: grid;
+  /* Active la disposition en grille. */
+  grid-template-columns: 1fr 1fr;
+  /* Crée deux colonnes de largeur égale. */
+  gap: 12px;
+  /* Laisse 12 px entre les deux blocs. */
+}
+/* Fin de la règle .duo. */
+
+.tuile {
+/* Sélectionne chaque petit bloc de total. */
+  background: var(--surface-2);
+  /* Fond légèrement plus clair que la carte. */
+  border-radius: 14px;
+  /* Arrondit les coins à 14 px. */
+  padding: 12px 14px;
+  /* Marge intérieure : 12 px en haut et en bas, 14 px à gauche et à droite. */
+  min-width: 0;
+  /* Permet au contenu de rétrécir au lieu de forcer la grille à s'élargir. */
+}
+/* Fin de la règle .tuile. */
+
+.tuile-libelle {
+/* Sélectionne le nom du total (Revenus ou Dépenses). */
+  display: block;
+  /* Place le libellé sur sa propre ligne. */
+  color: var(--texte-doux);
+  /* Utilise la couleur de texte secondaire. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+}
+/* Fin de la règle .tuile-libelle. */
+
+.tuile-montant {
+/* Sélectionne le montant du total. */
+  display: block;
+  /* Place le montant sur sa propre ligne. */
+  margin-top: 2px;
+  /* Ajoute 2 px d'espace au-dessus. */
+  font-size: 16px;
+  /* Fixe la taille à 16 px. */
+  font-weight: 700;
+  /* Met le montant en gras. */
+  font-variant-numeric: tabular-nums;
+  /* Aligne les chiffres avec une largeur identique. */
+  overflow-wrap: anywhere;
+  /* Autorise le retour à la ligne si le montant est trop long. */
+}
+/* Fin de la règle .tuile-montant. */
+
+.revenu {
+/* Sélectionne tout élément marqué comme revenu. */
+  color: var(--neon);
+  /* Colore en vert néon. */
+}
+/* Fin de la règle .revenu. */
+
+.depense {
+/* Sélectionne tout élément marqué comme dépense. */
+  color: var(--depense);
+  /* Colore en rouge rosé. */
+}
+/* Fin de la règle .depense. */
+
+.formulaire {
+/* Sélectionne le formulaire d'ajout. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-direction: column;
+  /* Empile les champs verticalement. */
+  gap: 14px;
+  /* Laisse 14 px entre les champs. */
+}
+/* Fin de la règle .formulaire. */
+
+.bascule {
+/* Sélectionne le sélecteur Dépense / Revenu. */
+  display: grid;
+  /* Active la disposition en grille. */
+  grid-template-columns: 1fr 1fr;
+  /* Crée deux colonnes égales, une par choix. */
+  gap: 4px;
+  /* Laisse 4 px entre les deux boutons. */
+  padding: 4px;
+  /* Ajoute 4 px de marge intérieure autour des boutons. */
+  background: var(--noir);
+  /* Fond noir pour faire ressortir le bouton actif. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 14px;
+  /* Arrondit les coins à 14 px. */
+  position: relative;
+  /* Sert de repère de position pour les boutons radio cachés. */
+}
+/* Fin de la règle .bascule. */
+
+.bascule input {
+/* Sélectionne les deux boutons radio à l'intérieur de la bascule. */
+  position: absolute;
+  /* Sort les boutons radio du flux de la page. */
+  opacity: 0;
+  /* Les rend invisibles : on affiche à la place les libellés stylés. */
+  pointer-events: none;
+  /* Empêche de cliquer directement sur le bouton radio invisible. */
+}
+/* Fin de la règle .bascule input. */
+
+.bascule label {
+/* Sélectionne les libellés "Dépense" et "Revenu". */
+  padding: 11px 0;
+  /* Ajoute 11 px de marge intérieure en haut et en bas. */
+  text-align: center;
+  /* Centre le texte. */
+  font-weight: 700;
+  /* Met le texte en gras. */
+  color: var(--texte-doux);
+  /* Couleur secondaire tant que le choix n'est pas actif. */
+  border-radius: 10px;
+  /* Arrondit les coins à 10 px. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+  transition: background 0.15s, color 0.15s;
+  /* Anime en 0,15 seconde le changement de fond et de couleur. */
+}
+/* Fin de la règle .bascule label. */
+
+#type-depense:checked + label {
+/* Sélectionne le libellé qui suit le bouton "Dépense" quand il est coché. */
+  background: var(--depense);
+  /* Fond rouge rosé. */
+  color: var(--noir);
+  /* Texte noir pour un bon contraste. */
+}
+/* Fin de la règle du choix Dépense. */
+
+#type-revenu:checked + label {
+/* Sélectionne le libellé qui suit le bouton "Revenu" quand il est coché. */
+  background: var(--neon);
+  /* Fond vert néon. */
+  color: var(--noir);
+  /* Texte noir pour un bon contraste. */
+}
+/* Fin de la règle du choix Revenu. */
+
+.bascule input:focus-visible + label {
+/* Sélectionne le libellé quand on navigue au clavier sur le bouton radio associé. */
+  outline: 2px solid var(--texte);
+  /* Dessine un contour blanc visible. */
+  outline-offset: 2px;
+  /* Décale le contour de 2 px vers l'extérieur. */
+}
+/* Fin de la règle de focus de la bascule. */
+
+.champ {
+/* Sélectionne chaque groupe "libellé + champ". */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-direction: column;
+  /* Place le libellé au-dessus du champ. */
+  gap: 6px;
+  /* Laisse 6 px entre le libellé et le champ. */
+  min-width: 0;
+  /* Permet au champ de rétrécir dans une grille. */
+}
+/* Fin de la règle .champ. */
+
+.champ label {
+/* Sélectionne les libellés des champs. */
+  color: var(--texte-doux);
+  /* Utilise la couleur secondaire. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
+}
+/* Fin de la règle .champ label. */
+
+.deux-champs {
+/* Sélectionne la rangée qui regroupe Catégorie et Date. */
+  display: grid;
+  /* Active la disposition en grille. */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  /* Crée autant de colonnes de 140 px minimum que la largeur le permet, sinon une seule. */
+  gap: 14px;
+  /* Laisse 14 px entre les colonnes et les lignes. */
+}
+/* Fin de la règle .deux-champs. */
+
+input[type="number"], input[type="date"], input[type="text"], select {
+/* Sélectionne tous les champs de saisie et la liste déroulante. */
+  width: 100%;
+  /* Occupe toute la largeur disponible. */
+  min-width: 0;
+  /* Autorise le champ à rétrécir si besoin. */
+  background: var(--noir);
+  /* Fond noir. */
+  color: var(--texte);
+  /* Texte clair. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 12px;
+  /* Arrondit les coins à 12 px. */
+  padding: 12px 14px;
+  /* Marge intérieure : 12 px en haut et en bas, 14 px sur les côtés. */
+  font: inherit;
+  /* Reprend la police et la taille du reste de la page. */
+  font-size: 16px;
+  /* Impose 16 px : en dessous, certains téléphones zooment automatiquement sur le champ. */
+}
+/* Fin de la règle des champs. */
+
+input:focus-visible, select:focus-visible {
+/* Sélectionne un champ quand il est actif. */
+  outline: none;
+  /* Retire le contour par défaut du navigateur. */
+  border-color: var(--neon);
+  /* Colore la bordure en vert néon. */
+  box-shadow: 0 0 0 3px var(--neon-fond), 0 0 18px var(--neon-halo);
+  /* Ajoute un anneau vert discret et une lueur autour du champ actif. */
+}
+/* Fin de la règle de focus des champs. */
+
+.erreur {
+/* Sélectionne le message d'erreur du formulaire. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  color: var(--depense);
+  /* Colore le message en rouge rosé. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+}
+/* Fin de la règle .erreur. */
+
+.bouton-principal {
+/* Sélectionne le bouton "Ajouter". */
+  width: 100%;
+  /* Occupe toute la largeur de la carte. */
+  padding: 14px;
+  /* Ajoute 14 px de marge intérieure. */
+  border: 0;
+  /* Supprime la bordure par défaut. */
+  border-radius: 12px;
+  /* Arrondit les coins à 12 px. */
+  background: var(--neon);
+  /* Fond vert néon. */
+  color: var(--noir);
+  /* Texte noir pour un fort contraste. */
+  font: inherit;
+  /* Reprend la police de la page. */
+  font-weight: 700;
+  /* Met le texte en gras. */
+  font-size: 16px;
+  /* Fixe la taille à 16 px. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+  box-shadow: 0 0 26px var(--neon-halo);
+  /* Ajoute une lueur verte autour du bouton. */
+}
+/* Fin de la règle .bouton-principal. */
+
+.bouton-principal:active {
+/* Sélectionne le bouton pendant l'appui. */
+  transform: translateY(1px);
+  /* Décale le bouton de 1 px vers le bas pour simuler l'enfoncement. */
+}
+/* Fin de la règle :active du bouton. */
+
+.bouton-principal:focus-visible, .puce:focus-visible, .supprimer:focus-visible, .petit-bouton:focus-visible {
+/* Sélectionne les boutons quand on y navigue au clavier. */
+  outline: 2px solid var(--texte);
+  /* Dessine un contour blanc visible. */
+  outline-offset: 2px;
+  /* Décale le contour de 2 px. */
+}
+/* Fin de la règle de focus des boutons. */
+
+.entete-liste {
+/* Sélectionne la barre au-dessus de la liste (titre et compteur). */
+  display: flex;
+  /* Active la disposition flexible. */
+  align-items: baseline;
+  /* Aligne les textes sur leur ligne de base. */
+  justify-content: space-between;
+  /* Place le titre à gauche et le compteur à droite. */
+  gap: 12px;
+  /* Laisse 12 px entre les deux. */
+}
+/* Fin de la règle .entete-liste. */
+
+.compteur {
+/* Sélectionne le compteur d'opérations. */
+  color: var(--texte-doux);
+  /* Utilise la couleur secondaire. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+}
+/* Fin de la règle .compteur. */
+
+.filtres {
+/* Sélectionne la rangée de boutons de filtre. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-wrap: wrap;
+  /* Autorise le passage à la ligne si l'écran est étroit. */
+  gap: 8px;
+  /* Laisse 8 px entre les boutons. */
+}
+/* Fin de la règle .filtres. */
+
+.puce {
+/* Sélectionne chaque bouton de filtre. */
+  padding: 7px 16px;
+  /* Marge intérieure : 7 px en haut et en bas, 16 px sur les côtés. */
+  background: transparent;
+  /* Fond transparent. */
+  color: var(--texte-doux);
+  /* Texte de couleur secondaire. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 999px;
+  /* Arrondit complètement pour obtenir une forme de pilule. */
+  font: inherit;
+  /* Reprend la police de la page. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+}
+/* Fin de la règle .puce. */
+
+.puce[aria-pressed="true"] {
+/* Sélectionne le filtre actuellement choisi. */
+  color: var(--neon);
+  /* Texte vert néon. */
+  border-color: var(--neon);
+  /* Bordure vert néon. */
+  background: var(--neon-fond);
+  /* Fond vert très discret. */
+}
+/* Fin de la règle du filtre actif. */
+
+.liste {
+/* Sélectionne la liste des transactions. */
+  list-style: none;
+  /* Retire les puces de la liste. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  padding: 0;
+  /* Supprime la marge intérieure par défaut. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-direction: column;
+  /* Empile les lignes verticalement. */
+  gap: 8px;
+  /* Laisse 8 px entre les lignes. */
+}
+/* Fin de la règle .liste. */
+
+.ligne {
+/* Sélectionne chaque transaction de la liste. */
+  display: grid;
+  /* Active la disposition en grille. */
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  /* Quatre colonnes : pastille, texte (qui peut rétrécir), montant, bouton supprimer. */
+  align-items: center;
+  /* Centre verticalement le contenu de chaque colonne. */
+  gap: 12px;
+  /* Laisse 12 px entre les colonnes. */
+  padding: 12px 8px 12px 14px;
+  /* Marge intérieure plus petite à droite pour rapprocher le bouton supprimer du bord. */
+  background: var(--surface);
+  /* Fond de carte. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 14px;
+  /* Arrondit les coins à 14 px. */
+}
+/* Fin de la règle .ligne. */
+
+.point {
+/* Sélectionne la pastille de couleur à gauche de chaque ligne. */
+  width: 10px;
+  /* Largeur de 10 px. */
+  height: 10px;
+  /* Hauteur de 10 px : avec la largeur, cela forme un cercle. */
+  border-radius: 50%;
+  /* Arrondit à 50 % pour obtenir un rond parfait. */
+  background: currentColor;
+  /* Prend la couleur du texte de l'élément (vert pour un revenu, rose pour une dépense). */
+}
+/* Fin de la règle .point. */
+
+.ligne-titre {
+/* Sélectionne la première ligne de texte d'une transaction. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
+  overflow-wrap: anywhere;
+  /* Autorise le retour à la ligne dans un mot très long. */
+}
+/* Fin de la règle .ligne-titre. */
+
+.ligne-detail {
+/* Sélectionne la seconde ligne de texte (catégorie et date). */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+  color: var(--texte-doux);
+  /* Utilise la couleur secondaire. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+}
+/* Fin de la règle .ligne-detail. */
+
+.etiquette {
+/* Sélectionne la petite étiquette "exemple". */
+  margin-left: 6px;
+  /* Ajoute 6 px d'espace à gauche. */
+  padding: 1px 6px;
+  /* Marge intérieure très réduite. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 6px;
+  /* Arrondit légèrement les coins. */
+  font-size: 10px;
+  /* Fixe une très petite taille de 10 px. */
+  text-transform: uppercase;
+  /* Met le texte en majuscules. */
+  letter-spacing: 0.08em;
+  /* Espace légèrement les lettres. */
+}
+/* Fin de la règle .etiquette. */
+
+.ligne-montant {
+/* Sélectionne le montant de chaque transaction. */
+  font-weight: 700;
+  /* Met le montant en gras. */
+  white-space: nowrap;
+  /* Interdit le retour à la ligne : le montant reste sur une seule ligne. */
+  font-variant-numeric: tabular-nums;
+  /* Donne la même largeur à tous les chiffres. */
+}
+/* Fin de la règle .ligne-montant. */
+
+.supprimer {
+/* Sélectionne le bouton de suppression d'une transaction. */
+  width: 36px;
+  /* Largeur de 36 px, assez grande pour un doigt. */
+  height: 36px;
+  /* Hauteur de 36 px. */
+  background: transparent;
+  /* Fond transparent. */
+  color: var(--texte-doux);
+  /* Croix de couleur secondaire. */
+  border: 0;
+  /* Supprime la bordure par défaut. */
+  border-radius: 10px;
+  /* Arrondit les coins à 10 px. */
+  font-size: 18px;
+  /* Fixe la taille de la croix à 18 px. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+}
+/* Fin de la règle .supprimer. */
+
+.supprimer:hover {
+/* Sélectionne le bouton de suppression au survol. */
+  color: var(--depense);
+  /* Colore la croix en rouge rosé. */
+}
+/* Fin de la règle :hover du bouton supprimer. */
+
+.vide {
+/* Sélectionne le message affiché quand la liste est vide. */
+  padding: 28px 12px;
+  /* Ajoute de l'espace autour du message. */
+  text-align: center;
+  /* Centre le texte. */
+  color: var(--texte-doux);
+  /* Utilise la couleur secondaire. */
+}
+/* Fin de la règle .vide. */
+
+.avis {
+/* Sélectionne l'encadré qui signale la présence de données d'exemple. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-wrap: wrap;
+  /* Autorise le passage à la ligne si l'écran est étroit. */
+  align-items: center;
+  /* Centre verticalement le texte et le bouton. */
+  justify-content: space-between;
+  /* Écarte le texte et le bouton aux deux extrémités. */
+  gap: 8px 12px;
+  /* Laisse 8 px entre les lignes et 12 px entre les colonnes. */
+  padding: 10px 14px;
+  /* Ajoute une marge intérieure. */
+  border: 1px dashed var(--neon);
+  /* Bordure en pointillés verts. */
+  border-radius: 14px;
+  /* Arrondit les coins à 14 px. */
+  background: var(--neon-fond);
+  /* Fond vert très discret. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+}
+/* Fin de la règle .avis. */
+
+.avis p {
+/* Sélectionne le texte de l'encadré. */
+  margin: 0;
+  /* Supprime la marge par défaut. */
+}
+/* Fin de la règle .avis p. */
+
+.petit-bouton {
+/* Sélectionne le bouton "Effacer les exemples". */
+  padding: 6px 12px;
+  /* Ajoute une petite marge intérieure. */
+  background: transparent;
+  /* Fond transparent. */
+  color: var(--neon);
+  /* Texte vert néon. */
+  border: 1px solid var(--neon);
+  /* Bordure verte. */
+  border-radius: 999px;
+  /* Forme de pilule. */
+  font: inherit;
+  /* Reprend la police de la page. */
+  font-size: 12px;
+  /* Fixe la taille à 12 px. */
+  font-weight: 700;
+  /* Met le texte en gras. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+}
+/* Fin de la règle .petit-bouton. */
+
+@media (prefers-reduced-motion: reduce) {
+/* Cible les personnes qui ont demandé de réduire les animations dans leur système. */
+  .bascule label {
+  /* Sélectionne les libellés de la bascule. */
+    transition: none;
+    /* Supprime l'animation de changement de couleur. */
+  }
+  /* Fin de la règle des libellés. */
+}
+/* Fin de la requête média. */
+</style>
+<!-- Ferme le bloc de styles. -->
+</head>
+<!-- Ferme l'en-tête. -->
+<body>
+<!-- Ouvre le corps de la page : tout ce qui est visible à l'écran. -->
+
+<main class="app">
+<!-- Ouvre le conteneur principal de l'application (classe "app" définie dans le CSS). -->
+  <header>
+  <!-- Ouvre l'en-tête de la page. -->
+    <p class="surtitre">Suivi personnel</p>
+    <!-- Petite ligne en majuscules au-dessus du titre. -->
+    <h1>Budget Néon</h1>
+    <!-- Titre principal visible de l'application. -->
+  </header>
+  <!-- Ferme l'en-tête. -->
+
+  <section class="carte" aria-label="Résumé">
+  <!-- Ouvre la carte de résumé ; aria-label donne un nom à cette zone pour les lecteurs d'écran. -->
+    <p class="solde-libelle">Solde</p>
+    <!-- Libellé du grand montant : le solde est revenus moins dépenses. -->
+    <p class="solde-montant" id="solde">0,00 MAD</p>
+    <!-- Montant du solde ; le JavaScript le met à jour grâce à son identifiant "solde". -->
+    <div class="duo">
+    <!-- Ouvre la rangée qui contient les deux totaux. -->
+      <div class="tuile">
+      <!-- Ouvre le bloc du total des revenus. -->
+        <span class="tuile-libelle">Revenus</span>
+        <!-- Nom du total. -->
+        <span class="tuile-montant revenu" id="total-revenus">0,00 MAD</span>
+        <!-- Total des revenus, en vert ; mis à jour par le JavaScript. -->
+      </div>
+      <!-- Ferme le bloc des revenus. -->
+      <div class="tuile">
+      <!-- Ouvre le bloc du total des dépenses. -->
+        <span class="tuile-libelle">Dépenses</span>
+        <!-- Nom du total. -->
+        <span class="tuile-montant depense" id="total-depenses">0,00 MAD</span>
+        <!-- Total des dépenses, en rouge rosé ; mis à jour par le JavaScript. -->
+      </div>
+      <!-- Ferme le bloc des dépenses. -->
+    </div>
+    <!-- Ferme la rangée des totaux. -->
+  </section>
+  <!-- Ferme la carte de résumé. -->
+
+  <form class="carte formulaire" id="formulaire">
+  <!-- Ouvre le formulaire d'ajout d'une transaction. -->
+    <h2>Nouvelle transaction</h2>
+    <!-- Titre du formulaire. -->
+    <div class="bascule" role="radiogroup" aria-label="Type de transaction">
+    <!-- Ouvre le sélecteur Dépense / Revenu ; role et aria-label décrivent le groupe aux lecteurs d'écran. -->
+      <input type="radio" name="type" id="type-depense" value="depense" checked>
+      <!-- Bouton radio "dépense", coché par défaut ; "name" relie les deux radios pour qu'un seul soit actif. -->
+      <label for="type-depense">Dépense</label>
+      <!-- Libellé cliquable associé au bouton radio "dépense". -->
+      <input type="radio" name="type" id="type-revenu" value="revenu">
+      <!-- Bouton radio "revenu". -->
+      <label for="type-revenu">Revenu</label>
+      <!-- Libellé cliquable associé au bouton radio "revenu". -->
+    </div>
+    <!-- Ferme le sélecteur de type. -->
+    <div class="champ">
+    <!-- Ouvre le groupe du champ Montant. -->
+      <label for="montant">Montant (MAD)</label>
+      <!-- Libellé du champ ; "for" le relie au champ dont l'identifiant est "montant". -->
+      <input type="number" id="montant" inputmode="decimal" step="0.01" min="0.01" placeholder="0,00" required>
+      <!-- Champ numérique : clavier décimal sur téléphone, pas de 0,01, minimum 0,01, obligatoire. -->
+    </div>
+    <!-- Ferme le groupe du montant. -->
+    <div class="deux-champs">
+    <!-- Ouvre la rangée qui contient Catégorie et Date. -->
+      <div class="champ">
+      <!-- Ouvre le groupe du champ Catégorie. -->
+        <label for="categorie">Catégorie</label>
+        <!-- Libellé de la catégorie. -->
+        <select id="categorie"></select>
+        <!-- Liste déroulante vide : le JavaScript la remplit selon le type choisi. -->
+      </div>
+      <!-- Ferme le groupe de la catégorie. -->
+      <div class="champ">
+      <!-- Ouvre le groupe du champ Date. -->
+        <label for="date">Date</label>
+        <!-- Libellé de la date. -->
+        <input type="date" id="date" required>
+        <!-- Champ de date avec calendrier natif ; obligatoire. -->
+      </div>
+      <!-- Ferme le groupe de la date. -->
+    </div>
+    <!-- Ferme la rangée Catégorie et Date. -->
+    <div class="champ">
+    <!-- Ouvre le groupe du champ Note. -->
+      <label for="note">Note (facultatif)</label>
+      <!-- Libellé de la note. -->
+      <input type="text" id="note" maxlength="60" placeholder="Ex. courses du marché" autocomplete="off">
+      <!-- Champ texte limité à 60 caractères, sans suggestions automatiques du navigateur. -->
+    </div>
+    <!-- Ferme le groupe de la note. -->
+    <p class="erreur" id="erreur" role="alert" hidden></p>
+    <!-- Zone de message d'erreur, cachée par défaut ; role="alert" fait lire le message par les lecteurs d'écran. -->
+    <button type="submit" class="bouton-principal">Ajouter</button>
+    <!-- Bouton qui envoie le formulaire (déclenche l'événement "submit" géré en JavaScript). -->
+  </form>
+  <!-- Ferme le formulaire. -->
+
+  <div class="entete-liste">
+  <!-- Ouvre la barre au-dessus de la liste. -->
+    <h2>Transactions</h2>
+    <!-- Titre de la liste. -->
+    <span class="compteur" id="compteur"></span>
+    <!-- Compteur d'opérations affichées, rempli par le JavaScript. -->
+  </div>
+  <!-- Ferme la barre de la liste. -->
+
+  <div class="filtres" role="group" aria-label="Filtrer la liste">
+  <!-- Ouvre le groupe de boutons de filtre. -->
+    <button type="button" class="puce" data-filtre="tous" aria-pressed="true">Tout</button>
+    <!-- Filtre "Tout", actif au départ ; data-filtre stocke la valeur lue par le JavaScript. -->
+    <button type="button" class="puce" data-filtre="depense" aria-pressed="false">Dépenses</button>
+    <!-- Filtre "Dépenses", inactif au départ. -->
+    <button type="button" class="puce" data-filtre="revenu" aria-pressed="false">Revenus</button>
+    <!-- Filtre "Revenus", inactif au départ. -->
+  </div>
+  <!-- Ferme le groupe de filtres. -->
+
+  <ul class="liste" id="liste"></ul>
+  <!-- Liste vide : le JavaScript y ajoute une ligne par transaction. -->
+
+  <div class="avis" id="avis" hidden>
+  <!-- Encadré qui signale les données d'exemple ; caché tant qu'il n'y en a pas. -->
+    <p>Les lignes marquées « exemple » sont fictives.</p>
+    <!-- Texte d'information. -->
+    <button type="button" class="petit-bouton" id="effacer-exemples">Effacer les exemples</button>
+    <!-- Bouton qui supprime toutes les lignes d'exemple. -->
+  </div>
+  <!-- Ferme l'encadré d'avis. -->
+</main>
+<!-- Ferme le conteneur principal. -->
+
+<script>
+// Ouvre le bloc JavaScript : tout ce qui suit fait fonctionner l'application.
+
+const CLE_STOCKAGE = 'budget-neon-transactions';
+// Nom sous lequel les transactions sont enregistrées dans la mémoire du navigateur (localStorage).
+
+const CATEGORIES = {
+// Déclare l'objet qui liste les catégories disponibles pour chaque type.
+  depense: ['Alimentation', 'Transport', 'Logement', 'Factures', 'Santé', 'Loisirs', 'Shopping', 'Autre'],
+  // Catégories proposées quand le type choisi est "dépense".
+  revenu: ['Salaire', 'Freelance', 'Cadeau', 'Autre']
+  // Catégories proposées quand le type choisi est "revenu".
+};
+// Fin de l'objet CATEGORIES.
+
+const formatMonnaie = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' });
+// Crée un formateur qui écrit les nombres à la française, avec la devise MAD (dirham marocain).
+
+const elSolde = document.getElementById('solde');
+// Récupère dans la page l'élément qui affiche le solde.
+const elRevenus = document.getElementById('total-revenus');
+// Récupère l'élément qui affiche le total des revenus.
+const elDepenses = document.getElementById('total-depenses');
+// Récupère l'élément qui affiche le total des dépenses.
+const elListe = document.getElementById('liste');
+// Récupère la liste où s'affichent les transactions.
+const elCompteur = document.getElementById('compteur');
+// Récupère le compteur d'opérations.
+const elAvis = document.getElementById('avis');
+// Récupère l'encadré des données d'exemple.
+const elErreur = document.getElementById('erreur');
+// Récupère la zone du message d'erreur.
+const formulaire = document.getElementById('formulaire');
+// Récupère le formulaire d'ajout.
+const champMontant = document.getElementById('montant');
+// Récupère le champ du montant.
+const champCategorie = document.getElementById('categorie');
+// Récupère la liste déroulante des catégories.
+const champDate = document.getElementById('date');
+// Récupère le champ de la date.
+const champNote = document.getElementById('note');
+// Récupère le champ de la note.
+
+function aujourdhui() {
+// Déclare une fonction qui renvoie la date du jour.
+  return new Date().toLocaleDateString('sv-SE');
+  // Renvoie la date locale au format AAAA-MM-JJ (le format suédois a justement cette forme, requise par le champ date).
+}
+// Fin de la fonction aujourdhui.
+
+function ilYa(jours) {
+// Déclare une fonction qui renvoie la date d'il y a un certain nombre de jours.
+  const d = new Date();
+  // Crée un objet date égal à maintenant.
+  d.setDate(d.getDate() - jours);
+  // Recule la date du nombre de jours demandé.
+  return d.toLocaleDateString('sv-SE');
+  // Renvoie cette date au format AAAA-MM-JJ.
+}
+// Fin de la fonction ilYa.
+
+function exemples() {
+// Déclare une fonction qui fabrique des transactions d'exemple pour le premier lancement.
+  return [
+  // Renvoie un tableau de transactions.
+    { id: 1, type: 'revenu', montant: 8000, categorie: 'Salaire', date: ilYa(20), note: 'Salaire du mois', exemple: true },
+    // Un revenu de 8 000 MAD daté d'il y a 20 jours ; "exemple: true" le marque comme fictif.
+    { id: 2, type: 'depense', montant: 2500, categorie: 'Logement', date: ilYa(18), note: 'Loyer', exemple: true },
+    // Une dépense de loyer de 2 500 MAD.
+    { id: 3, type: 'depense', montant: 340.5, categorie: 'Alimentation', date: ilYa(9), note: 'Courses de la semaine', exemple: true },
+    // Une dépense de courses de 340,50 MAD.
+    { id: 4, type: 'depense', montant: 60, categorie: 'Transport', date: ilYa(4), note: 'Carburant', exemple: true },
+    // Une dépense de transport de 60 MAD.
+    { id: 5, type: 'revenu', montant: 900, categorie: 'Freelance', date: ilYa(2), note: 'Petite mission', exemple: true },
+    // Un revenu de 900 MAD.
+    { id: 6, type: 'depense', montant: 120, categorie: 'Loisirs', date: ilYa(1), note: 'Sortie entre amis', exemple: true }
+    // Une dépense de loisirs de 120 MAD.
+  ];
+  // Fin du tableau d'exemples.
+}
+// Fin de la fonction exemples.
+
+function charger() {
+// Déclare une fonction qui relit les transactions enregistrées.
+  try {
+  // Essaie d'exécuter le bloc ; si le navigateur refuse l'accès au stockage, on passe au catch.
+    const brut = localStorage.getItem(CLE_STOCKAGE);
+    // Lit le texte enregistré sous notre clé (ou null s'il n'y a rien).
+    const lu = brut ? JSON.parse(brut) : null;
+    // Si du texte existe, le convertit en tableau JavaScript ; sinon garde null.
+    return Array.isArray(lu) ? lu : null;
+    // Renvoie le tableau s'il est valide, sinon null.
+  } catch (erreur) {
+  // Se déclenche si la lecture ou la conversion a échoué.
+    return null;
+    // Renvoie null : l'application démarrera avec les exemples.
+  }
+  // Fin du bloc try/catch.
+}
+// Fin de la fonction charger.
+
+function sauver() {
+// Déclare une fonction qui enregistre les transactions dans le navigateur.
+  try {
+  // Essaie d'enregistrer ; un échec ne doit pas faire planter l'application.
+    localStorage.setItem(CLE_STOCKAGE, JSON.stringify(transactions));
+    // Convertit le tableau en texte JSON et l'enregistre sous notre clé.
+  } catch (erreur) {
+  // Se déclenche si le stockage est refusé (navigation privée, par exemple).
+    // Aucune action : l'application continue de fonctionner, sans sauvegarde.
+  }
+  // Fin du bloc try/catch.
+}
+// Fin de la fonction sauver.
+
+let transactions = charger() || exemples();
+// Prend les transactions enregistrées, ou les exemples s'il n'y a encore rien.
+let filtreActif = 'tous';
+// Mémorise le filtre choisi : "tous", "depense" ou "revenu".
+
+function creer(balise, classe, texte) {
+// Déclare une fonction utilitaire qui crée un élément HTML.
+  const noeud = document.createElement(balise);
+  // Crée un élément de la balise demandée (par exemple "li" ou "p").
+  if (classe) noeud.className = classe;
+  // Si une classe CSS est donnée, la lui applique.
+  if (texte !== undefined) noeud.textContent = texte;
+  // Si un texte est donné, l'insère comme contenu (en texte simple, donc sans risque d'injection HTML).
+  return noeud;
+  // Renvoie l'élément créé.
+}
+// Fin de la fonction creer.
+
+function creerLigne(t) {
+// Déclare une fonction qui construit la ligne HTML d'une transaction "t".
+  const estRevenu = t.type === 'revenu';
+  // Vaut vrai si la transaction est un revenu.
+  const li = creer('li', 'ligne ' + (estRevenu ? 'revenu' : 'depense'));
+  // Crée l'élément de liste, avec la classe de couleur correspondant au type.
+  const point = creer('span', 'point');
+  // Crée la pastille de couleur.
+  point.setAttribute('aria-hidden', 'true');
+  // Cache la pastille aux lecteurs d'écran, car elle est purement décorative.
+  const bloc = creer('div');
+  // Crée le bloc qui contient les deux lignes de texte.
+  bloc.style.minWidth = '0';
+  // Autorise le bloc à rétrécir pour que le texte long passe à la ligne.
+  const titre = creer('p', 'ligne-titre', t.note || t.categorie);
+  // Crée la première ligne : la note, ou la catégorie si aucune note n'a été saisie.
+  const date = new Date(t.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  // Convertit la date AAAA-MM-JJ en texte français court, par exemple "14 oct.".
+  const detail = creer('p', 'ligne-detail', t.categorie + ' · ' + date);
+  // Crée la seconde ligne : la catégorie suivie de la date.
+  if (t.exemple) detail.appendChild(creer('span', 'etiquette', 'exemple'));
+  // Si la transaction est un exemple, ajoute l'étiquette « exemple » à la fin de la ligne.
+  bloc.append(titre, detail);
+  // Place les deux lignes de texte dans le bloc.
+  const montant = creer('span', 'ligne-montant', (estRevenu ? '+' : '−') + ' ' + formatMonnaie.format(t.montant));
+  // Crée le montant, précédé de + pour un revenu ou de − pour une dépense.
+  const supprimer = creer('button', 'supprimer', '✕');
+  // Crée le bouton de suppression avec une croix.
+  supprimer.type = 'button';
+  // Précise que ce bouton n'envoie aucun formulaire.
+  supprimer.setAttribute('aria-label', 'Supprimer cette transaction');
+  // Donne un nom au bouton pour les lecteurs d'écran, car la croix seule n'est pas parlante.
+  supprimer.addEventListener('click', function () {
+  // Définit ce qui se passe quand on appuie sur le bouton.
+    transactions = transactions.filter(function (x) { return x.id !== t.id; });
+    // Garde toutes les transactions sauf celle dont l'identifiant correspond à la ligne supprimée.
+    sauver();
+    // Enregistre la nouvelle liste.
+    afficher();
+    // Met à jour l'écran (liste et totaux).
+  });
+  // Fin du gestionnaire de clic.
+  li.append(point, bloc, montant, supprimer);
+  // Assemble la ligne : pastille, texte, montant et bouton.
+  return li;
+  // Renvoie la ligne terminée.
+}
+// Fin de la fonction creerLigne.
+
+function afficher() {
+// Déclare la fonction qui redessine les totaux et la liste.
+  let revenus = 0;
+  // Compteur du total des revenus, qui part de zéro.
+  let depenses = 0;
+  // Compteur du total des dépenses, qui part de zéro.
+  for (const t of transactions) {
+  // Parcourt chaque transaction, une par une.
+    if (t.type === 'revenu') {
+    // Si c'est un revenu...
+      revenus += t.montant;
+      // ...ajoute son montant au total des revenus.
+    } else {
+    // Sinon, c'est une dépense...
+      depenses += t.montant;
+      // ...ajoute son montant au total des dépenses.
+    }
+    // Fin du test revenu ou dépense.
+  }
+  // Fin de la boucle.
+  const solde = revenus - depenses;
+  // Calcule le solde : revenus moins dépenses.
+  elRevenus.textContent = formatMonnaie.format(revenus);
+  // Affiche le total des revenus au format monétaire.
+  elDepenses.textContent = formatMonnaie.format(depenses);
+  // Affiche le total des dépenses au format monétaire.
+  elSolde.textContent = formatMonnaie.format(solde);
+  // Affiche le solde au format monétaire.
+  elSolde.classList.toggle('negatif', solde < 0);
+  // Ajoute la classe "negatif" (couleur rose) si le solde est inférieur à zéro, la retire sinon.
+  const visibles = transactions
+  // Part de la liste complète des transactions pour préparer celles à afficher.
+    .filter(function (t) { return filtreActif === 'tous' || t.type === filtreActif; })
+    // Garde toutes les transactions si le filtre est "tous", sinon seulement celles du type choisi.
+    .sort(function (a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
+    // Trie de la plus récente à la plus ancienne ; à date égale, la dernière ajoutée passe en premier.
+  elCompteur.textContent = visibles.length + (visibles.length > 1 ? ' opérations' : ' opération');
+  // Affiche le nombre de lignes visibles, avec "opération" au singulier ou au pluriel.
+  elListe.replaceChildren();
+  // Vide la liste avant de la reconstruire.
+  if (visibles.length === 0) {
+  // Si aucune transaction n'est à afficher...
+    elListe.appendChild(creer('li', 'vide', 'Aucune transaction pour le moment.'));
+    // ...affiche un message d'information.
+  }
+  // Fin du test de liste vide.
+  for (const t of visibles) {
+  // Parcourt chaque transaction à afficher.
+    elListe.appendChild(creerLigne(t));
+    // Construit sa ligne et l'ajoute à la liste.
+  }
+  // Fin de la boucle d'affichage.
+  elAvis.hidden = !transactions.some(function (t) { return t.exemple; });
+  // Montre l'encadré d'avis seulement s'il reste au moins une transaction d'exemple.
+}
+// Fin de la fonction afficher.
+
+function remplirCategories() {
+// Déclare la fonction qui remplit la liste déroulante selon le type choisi.
+  const type = document.querySelector('input[name="type"]:checked').value;
+  // Lit la valeur du bouton radio coché ("depense" ou "revenu").
+  champCategorie.replaceChildren();
+  // Vide la liste déroulante.
+  for (const nom of CATEGORIES[type]) {
+  // Parcourt chaque catégorie du type choisi.
+    const option = creer('option', '', nom);
+    // Crée une option qui affiche le nom de la catégorie.
+    option.value = nom;
+    // Définit la valeur de l'option, identique à son nom.
+    champCategorie.appendChild(option);
+    // Ajoute l'option à la liste déroulante.
+  }
+  // Fin de la boucle.
+}
+// Fin de la fonction remplirCategories.
+
+function montrerErreur(message) {
+// Déclare la fonction qui affiche ou cache le message d'erreur.
+  elErreur.textContent = message;
+  // Écrit le message dans la zone d'erreur.
+  elErreur.hidden = !message;
+  // Cache la zone si le message est vide, l'affiche sinon.
+}
+// Fin de la fonction montrerErreur.
+
+document.querySelectorAll('input[name="type"]').forEach(function (radio) {
+// Pour chacun des deux boutons radio Dépense / Revenu...
+  radio.addEventListener('change', remplirCategories);
+  // ...recharge la liste des catégories dès que le choix change.
+});
+// Fin de la boucle sur les boutons radio.
+
+formulaire.addEventListener('submit', function (evenement) {
+// Définit ce qui se passe quand on valide le formulaire.
+  evenement.preventDefault();
+  // Empêche le rechargement de la page, qui est le comportement par défaut d'un formulaire.
+  const montant = Math.round(champMontant.valueAsNumber * 100) / 100;
+  // Lit le montant saisi et l'arrondit à deux décimales.
+  if (!(montant > 0)) {
+  // Si le montant n'est pas un nombre supérieur à zéro...
+    montrerErreur('Saisissez un montant supérieur à 0.');
+    // ...affiche une erreur qui explique quoi corriger...
+    return;
+    // ...et arrête la fonction sans rien enregistrer.
+  }
+  // Fin du test du montant.
+  if (!champDate.value) {
+  // Si aucune date n'est renseignée...
+    montrerErreur('Choisissez une date.');
+    // ...affiche une erreur...
+    return;
+    // ...et arrête la fonction.
+  }
+  // Fin du test de la date.
+  montrerErreur('');
+  // Efface un éventuel message d'erreur précédent.
+  transactions.push({
+  // Ajoute une nouvelle transaction à la fin du tableau.
+    id: Date.now(),
+    // Identifiant unique : le nombre de millisecondes écoulées depuis 1970.
+    type: document.querySelector('input[name="type"]:checked').value,
+    // Type choisi : "depense" ou "revenu".
+    montant: montant,
+    // Montant arrondi.
+    categorie: champCategorie.value,
+    // Catégorie sélectionnée.
+    date: champDate.value,
+    // Date saisie, au format AAAA-MM-JJ.
+    note: champNote.value.trim()
+    // Note saisie, sans les espaces au début et à la fin.
+  });
+  // Fin de l'ajout de la transaction.
+  sauver();
+  // Enregistre la liste mise à jour.
+  afficher();
+  // Met à jour l'écran (liste et totaux).
+  champMontant.value = '';
+  // Vide le champ du montant.
+  champNote.value = '';
+  // Vide le champ de la note.
+  champMontant.focus();
+  // Replace le curseur dans le champ du montant pour saisir la suite rapidement.
+});
+// Fin du gestionnaire de soumission.
+
+document.querySelectorAll('.puce').forEach(function (puce) {
+// Pour chaque bouton de filtre...
+  puce.addEventListener('click', function () {
+  // ...définit ce qui se passe au clic.
+    filtreActif = puce.dataset.filtre;
+    // Mémorise le filtre choisi, lu dans l'attribut data-filtre du bouton.
+    document.querySelectorAll('.puce').forEach(function (autre) {
+    // Parcourt tous les boutons de filtre...
+      autre.setAttribute('aria-pressed', String(autre === puce));
+      // ...et marque comme "enfoncé" uniquement celui sur lequel on vient de cliquer.
+    });
+    // Fin de la boucle sur les boutons.
+    afficher();
+    // Redessine la liste avec le nouveau filtre.
+  });
+  // Fin du gestionnaire de clic.
+});
+// Fin de la boucle sur les filtres.
+
+document.getElementById('effacer-exemples').addEventListener('click', function () {
+// Définit ce qui se passe quand on appuie sur "Effacer les exemples".
+  transactions = transactions.filter(function (t) { return !t.exemple; });
+  // Garde uniquement les transactions qui ne sont pas des exemples.
+  sauver();
+  // Enregistre la liste nettoyée (même vide, pour que les exemples ne reviennent pas).
+  afficher();
+  // Met à jour l'écran.
+});
+// Fin du gestionnaire.
+
+champDate.value = aujourdhui();
+// Pré-remplit le champ date avec la date du jour.
+remplirCategories();
+// Remplit la liste des catégories pour le type choisi au départ (dépense).
+afficher();
+// Dessine l'écran une première fois au chargement de la page.
+</script>
+<!-- Ferme le bloc JavaScript : fin du fichier. -->
+
+<script>
+// Ouvre un second bloc JavaScript, dédié au fonctionnement hors connexion.
+if ('serviceWorker' in navigator) {
+// Vérifie que le navigateur sait gérer les service workers.
+  window.addEventListener('load', function () {
+  // Attend que la page soit entièrement chargée avant de lancer l'enregistrement.
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+    // Enregistre le fichier sw.js ; en cas d'échec, ignore l'erreur car l'application fonctionne quand même.
+  });
+  // Fin du gestionnaire de chargement.
+}
+// Fin du test de compatibilité.
+</script>
+<!-- Ferme le second bloc JavaScript. -->
+</body>
+<!-- Ferme le corps de la page. -->
+</html>
+<!-- Ferme le document HTML : fin du fichier. -->
