@@ -1114,6 +1114,8 @@ input:focus-visible, select:focus-visible {
 
   <ul class="liste" id="liste"></ul>
   <!-- Liste vide : le JavaScript y ajoute une ligne par transaction. -->
+  <button type="button" class="bouton-secondaire" id="afficher-plus" hidden>Afficher plus</button>
+  <!-- Bouton qui affiche les 10 transactions suivantes ; caché quand tout est déjà affiché. -->
 
   <div class="avis" id="avis" hidden>
   <!-- Encadré qui signale les données d'exemple ; caché tant qu'il n'y en a pas. -->
@@ -1169,6 +1171,8 @@ const elErreur = document.getElementById('erreur');
 // Récupère la zone du message d'erreur.
 const elRecherche = document.getElementById('recherche');
 // Récupère le champ de recherche.
+const elPlus = document.getElementById('afficher-plus');
+// Récupère le bouton "Afficher plus".
 const formulaire = document.getElementById('formulaire');
 // Récupère le formulaire d'ajout et de modification.
 const elTitreFormulaire = document.getElementById('titre-formulaire');
@@ -1262,8 +1266,12 @@ let transactions = charger() || exemples();
 // Prend les transactions enregistrées, ou les exemples s'il n'y a encore rien.
 let filtreType = 'tous';
 // Mémorise le filtre de type choisi : "tous", "depense" ou "revenu".
-let moisChoisi = 'tous';
-// Mémorise le mois choisi au format AAAA-MM, ou "tous" pour afficher toutes les périodes.
+const TAILLE_PAGE = 10;
+// Nombre de transactions affichées à chaque fois : 10 au départ, puis 10 de plus à chaque clic sur "Afficher plus".
+let nombreAffiche = TAILLE_PAGE;
+// Mémorise combien de transactions sont actuellement affichées dans la liste.
+let moisChoisi = aujourdhui().slice(0, 7);
+// Mémorise le mois choisi au format AAAA-MM ; au démarrage, c'est le mois en cours (les 7 premiers caractères de la date du jour).
 let texteRecherche = '';
 // Mémorise le texte tapé dans la recherche, en minuscules.
 let idEdition = null;
@@ -1315,6 +1323,10 @@ function remplirMois() {
 // Déclare la fonction qui remplit la liste déroulante des mois.
   const mois = Array.from(new Set(transactions.map(function (t) { return t.date.slice(0, 7); })));
   // Prend le mois (AAAA-MM) de chaque transaction et supprime les doublons.
+  const courant = aujourdhui().slice(0, 7);
+  // Calcule le mois en cours au format AAAA-MM.
+  if (mois.indexOf(courant) === -1) mois.push(courant);
+  // Ajoute le mois en cours à la liste même s'il n'a encore aucune transaction, pour qu'il reste sélectionnable.
   mois.sort().reverse();
   // Trie les mois du plus récent au plus ancien.
   if (moisChoisi !== 'tous' && mois.indexOf(moisChoisi) === -1) moisChoisi = 'tous';
@@ -1533,16 +1545,22 @@ function afficherListe() {
   // Vide la liste avant de la reconstruire.
   if (visibles.length === 0) {
   // Si aucune transaction n'est à afficher...
-    elListe.appendChild(creer('li', 'vide', 'Aucune transaction à afficher.'));
-    // ...affiche un message d'information.
+    const vide = moisChoisi !== 'tous' && transactions.length > 0 && !texteRecherche && filtreType === 'tous';
+    // Vaut vrai si la liste est vide uniquement parce que le mois choisi n'a aucune transaction (ni recherche, ni filtre actif).
+    elListe.appendChild(creer('li', 'vide', vide ? 'Aucune transaction en ' + nomMois(moisChoisi) + '. Choisissez un autre mois pour voir les précédentes.' : 'Aucune transaction à afficher.'));
+    // ...affiche un message adapté : il invite à changer de mois si le mois choisi est vide.
   }
   // Fin du test de liste vide.
-  for (const t of visibles) {
-  // Parcourt chaque transaction à afficher.
+  for (const t of visibles.slice(0, nombreAffiche)) {
+  // Parcourt seulement les premières transactions, dans la limite du nombre à afficher.
     elListe.appendChild(creerLigne(t));
     // Construit sa ligne et l'ajoute à la liste.
   }
   // Fin de la boucle d'affichage.
+  elPlus.hidden = visibles.length <= nombreAffiche;
+  // Cache le bouton "Afficher plus" quand toutes les transactions sont déjà visibles.
+  elPlus.textContent = 'Afficher plus (' + (visibles.length - nombreAffiche) + ' restantes)';
+  // Écrit sur le bouton combien de transactions restent à afficher.
 }
 // Fin de la fonction afficherListe.
 
@@ -1748,6 +1766,8 @@ elMois.addEventListener('change', function () {
 // Définit ce qui se passe quand on choisit un autre mois.
   moisChoisi = elMois.value;
   // Mémorise le mois choisi.
+  nombreAffiche = TAILLE_PAGE;
+  // Revient à 10 transactions affichées pour cette nouvelle période.
   idConfirmation = null;
   // Annule toute demande de suppression en cours.
   afficher();
@@ -1759,6 +1779,8 @@ elRecherche.addEventListener('input', function () {
 // Définit ce qui se passe à chaque lettre tapée dans la recherche.
   texteRecherche = elRecherche.value.trim().toLowerCase();
   // Mémorise le texte, sans espaces autour et en minuscules pour ignorer la casse.
+  nombreAffiche = TAILLE_PAGE;
+  // Revient à 10 transactions affichées pour cette nouvelle recherche.
   afficherListe();
   // Redessine seulement la liste, car les totaux ne dépendent pas de la recherche.
 });
@@ -1770,6 +1792,8 @@ document.querySelectorAll('.puce').forEach(function (puce) {
   // ...définit ce qui se passe au clic.
     filtreType = puce.dataset.filtre;
     // Mémorise le filtre choisi, lu dans l'attribut data-filtre du bouton.
+    nombreAffiche = TAILLE_PAGE;
+    // Revient à 10 transactions affichées pour ce nouveau filtre.
     document.querySelectorAll('.puce').forEach(function (autre) {
     // Parcourt tous les boutons de filtre...
       autre.setAttribute('aria-pressed', String(autre === puce));
@@ -1782,6 +1806,15 @@ document.querySelectorAll('.puce').forEach(function (puce) {
   // Fin du gestionnaire de clic.
 });
 // Fin de la boucle sur les filtres.
+
+elPlus.addEventListener('click', function () {
+// Définit ce qui se passe quand on appuie sur "Afficher plus".
+  nombreAffiche += TAILLE_PAGE;
+  // Augmente de 10 le nombre de transactions affichées.
+  afficherListe();
+  // Redessine la liste avec les transactions supplémentaires.
+});
+// Fin du gestionnaire.
 
 document.getElementById('effacer-exemples').addEventListener('click', function () {
 // Définit ce qui se passe quand on appuie sur "Effacer les exemples".
