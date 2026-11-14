@@ -32,7 +32,7 @@
 /* Ouvre le bloc de styles CSS : tout ce qui suit décrit l'apparence de la page. */
 
 /* Mise en page : une seule colonne centrée, pensée d'abord pour un écran de téléphone. */
-/* Commentaire de plan : les cartes sont empilées de haut en bas (résumé, formulaire, liste). */
+/* Les cartes sont empilées de haut en bas : résumé, catégories, formulaire, liste. */
 
 :root {
 /* Sélectionne la racine du document : on y déclare les couleurs et polices réutilisables (variables). */
@@ -56,6 +56,8 @@
   /* Le même vert, transparent à 10 %, utilisé comme fond discret. */
   --depense: #ff6b81;
   /* Rouge rosé qui désigne les dépenses, pour les distinguer des revenus. */
+  --depense-fond: rgba(255, 107, 129, 0.12);
+  /* Le même rouge rosé, très transparent, utilisé comme fond d'alerte. */
   --police-titre: 'Unbounded', 'Arial Black', sans-serif;
   /* Police des titres et montants, avec des polices de secours si Unbounded ne charge pas. */
   --police-texte: 'Manrope', system-ui, sans-serif;
@@ -163,7 +165,7 @@ h2 {
 /* Fin de la règle h2. */
 
 .carte {
-/* Sélectionne toutes les cartes (résumé et formulaire). */
+/* Sélectionne toutes les cartes (résumé, catégories et formulaire). */
   background: var(--surface);
   /* Fond de carte, un peu plus clair que la page. */
   border: 1px solid var(--ligne);
@@ -174,6 +176,28 @@ h2 {
   /* Ajoute 20 px de marge intérieure sur les quatre côtés. */
 }
 /* Fin de la règle .carte. */
+
+.carte.mode-edition {
+/* Sélectionne le formulaire quand on est en train de modifier une transaction. */
+  border-color: var(--neon);
+  /* Colore la bordure en vert néon pour montrer qu'on est en mode modification. */
+  box-shadow: 0 0 26px var(--neon-halo);
+  /* Ajoute une lueur verte autour du formulaire. */
+}
+/* Fin de la règle .carte.mode-edition. */
+
+.solde-tete {
+/* Sélectionne la ligne qui contient le mot "Solde" et le choix du mois. */
+  display: flex;
+  /* Active la disposition flexible. */
+  align-items: center;
+  /* Centre verticalement les deux éléments. */
+  justify-content: space-between;
+  /* Place "Solde" à gauche et le choix du mois à droite. */
+  gap: 12px;
+  /* Laisse 12 px entre les deux. */
+}
+/* Fin de la règle .solde-tete. */
 
 .solde-libelle {
 /* Sélectionne le mot "Solde" au-dessus du montant. */
@@ -189,6 +213,19 @@ h2 {
   /* Met le texte en majuscules. */
 }
 /* Fin de la règle .solde-libelle. */
+
+.choix-mois {
+/* Sélectionne la liste déroulante des mois. */
+  width: auto !important;
+  /* Annule la largeur de 100 % des autres champs : cette liste reste compacte. */
+  max-width: 55%;
+  /* Empêche la liste de dépasser 55 % de la largeur de la carte. */
+  padding: 8px 12px !important;
+  /* Réduit la marge intérieure pour une liste plus petite que les champs du formulaire. */
+  font-size: 14px !important;
+  /* Réduit la taille du texte à 14 px. */
+}
+/* Fin de la règle .choix-mois. */
 
 .solde-montant {
 /* Sélectionne le grand montant du solde. */
@@ -285,6 +322,73 @@ h2 {
   /* Colore en rouge rosé. */
 }
 /* Fin de la règle .depense. */
+
+.cat-liste {
+/* Sélectionne la liste des dépenses par catégorie. */
+  list-style: none;
+  /* Retire les puces de la liste. */
+  margin: 14px 0 0;
+  /* Ajoute 14 px d'espace au-dessus, aucune autre marge. */
+  padding: 0;
+  /* Supprime la marge intérieure par défaut. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-direction: column;
+  /* Empile les catégories verticalement. */
+  gap: 12px;
+  /* Laisse 12 px entre les catégories. */
+}
+/* Fin de la règle .cat-liste. */
+
+.cat-texte {
+/* Sélectionne la ligne qui contient le nom de la catégorie et son montant. */
+  display: flex;
+  /* Active la disposition flexible. */
+  justify-content: space-between;
+  /* Place le nom à gauche et le montant à droite. */
+  gap: 12px;
+  /* Laisse 12 px entre les deux. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+  margin-bottom: 5px;
+  /* Ajoute 5 px d'espace avant la barre. */
+}
+/* Fin de la règle .cat-texte. */
+
+.cat-montant {
+/* Sélectionne le montant et le pourcentage d'une catégorie. */
+  color: var(--texte-doux);
+  /* Utilise la couleur secondaire. */
+  font-variant-numeric: tabular-nums;
+  /* Aligne les chiffres avec une largeur identique. */
+  white-space: nowrap;
+  /* Empêche le retour à la ligne. */
+}
+/* Fin de la règle .cat-montant. */
+
+.cat-piste {
+/* Sélectionne le fond de la barre de progression. */
+  height: 8px;
+  /* Fixe la hauteur de la barre à 8 px. */
+  background: var(--surface-2);
+  /* Fond gris foncé qui représente 100 %. */
+  border-radius: 999px;
+  /* Arrondit complètement les extrémités. */
+  overflow: hidden;
+  /* Cache ce qui dépasse, pour que la barre colorée reste arrondie. */
+}
+/* Fin de la règle .cat-piste. */
+
+.cat-barre {
+/* Sélectionne la barre colorée qui se remplit selon le pourcentage. */
+  height: 100%;
+  /* Occupe toute la hauteur de la piste. */
+  background: var(--depense);
+  /* Colore la barre en rouge rosé, la couleur des dépenses. */
+  border-radius: 999px;
+  /* Arrondit les extrémités. */
+}
+/* Fin de la règle .cat-barre. */
 
 .formulaire {
 /* Sélectionne le formulaire d'ajout. */
@@ -410,8 +514,8 @@ h2 {
 }
 /* Fin de la règle .deux-champs. */
 
-input[type="number"], input[type="date"], input[type="text"], select {
-/* Sélectionne tous les champs de saisie et la liste déroulante. */
+input[type="number"], input[type="date"], input[type="text"], input[type="search"], select {
+/* Sélectionne tous les champs de saisie et les listes déroulantes. */
   width: 100%;
   /* Occupe toute la largeur disponible. */
   min-width: 0;
@@ -456,7 +560,7 @@ input:focus-visible, select:focus-visible {
 /* Fin de la règle .erreur. */
 
 .bouton-principal {
-/* Sélectionne le bouton "Ajouter". */
+/* Sélectionne le bouton "Ajouter" ou "Enregistrer". */
   width: 100%;
   /* Occupe toute la largeur de la carte. */
   padding: 14px;
@@ -489,7 +593,32 @@ input:focus-visible, select:focus-visible {
 }
 /* Fin de la règle :active du bouton. */
 
-.bouton-principal:focus-visible, .puce:focus-visible, .supprimer:focus-visible, .petit-bouton:focus-visible {
+.bouton-secondaire {
+/* Sélectionne les boutons discrets : "Annuler la modification" et "Exporter". */
+  width: 100%;
+  /* Occupe toute la largeur disponible. */
+  padding: 12px;
+  /* Ajoute 12 px de marge intérieure. */
+  background: transparent;
+  /* Fond transparent. */
+  color: var(--texte);
+  /* Texte clair. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 12px;
+  /* Arrondit les coins à 12 px. */
+  font: inherit;
+  /* Reprend la police de la page. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
+  font-size: 15px;
+  /* Fixe la taille à 15 px. */
+  cursor: pointer;
+  /* Affiche une main au survol sur ordinateur. */
+}
+/* Fin de la règle .bouton-secondaire. */
+
+.bouton-principal:focus-visible, .bouton-secondaire:focus-visible, .puce:focus-visible, .action:focus-visible, .petit-bouton:focus-visible {
 /* Sélectionne les boutons quand on y navigue au clavier. */
   outline: 2px solid var(--texte);
   /* Dessine un contour blanc visible. */
@@ -586,14 +715,14 @@ input:focus-visible, select:focus-visible {
 /* Sélectionne chaque transaction de la liste. */
   display: grid;
   /* Active la disposition en grille. */
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  /* Quatre colonnes : pastille, texte (qui peut rétrécir), montant, bouton supprimer. */
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  /* Trois colonnes : pastille, texte (qui peut rétrécir) et montant. */
   align-items: center;
   /* Centre verticalement le contenu de chaque colonne. */
-  gap: 12px;
-  /* Laisse 12 px entre les colonnes. */
-  padding: 12px 8px 12px 14px;
-  /* Marge intérieure plus petite à droite pour rapprocher le bouton supprimer du bord. */
+  gap: 10px 12px;
+  /* Laisse 10 px entre les lignes de la grille et 12 px entre les colonnes. */
+  padding: 12px 14px;
+  /* Marge intérieure : 12 px en haut et en bas, 14 px sur les côtés. */
   background: var(--surface);
   /* Fond de carte. */
   border: 1px solid var(--ligne);
@@ -602,6 +731,13 @@ input:focus-visible, select:focus-visible {
   /* Arrondit les coins à 14 px. */
 }
 /* Fin de la règle .ligne. */
+
+.ligne.en-edition {
+/* Sélectionne la ligne qu'on est en train de modifier. */
+  border-color: var(--neon);
+  /* Colore la bordure en vert néon pour la repérer dans la liste. */
+}
+/* Fin de la règle .ligne.en-edition. */
 
 .point {
 /* Sélectionne la pastille de couleur à gauche de chaque ligne. */
@@ -620,6 +756,8 @@ input:focus-visible, select:focus-visible {
 /* Sélectionne la première ligne de texte d'une transaction. */
   margin: 0;
   /* Supprime la marge par défaut. */
+  color: var(--texte);
+  /* Garde le texte clair, quelle que soit la couleur de la ligne. */
   font-weight: 600;
   /* Utilise une graisse semi-grasse. */
   overflow-wrap: anywhere;
@@ -668,33 +806,89 @@ input:focus-visible, select:focus-visible {
 }
 /* Fin de la règle .ligne-montant. */
 
-.supprimer {
-/* Sélectionne le bouton de suppression d'une transaction. */
-  width: 36px;
-  /* Largeur de 36 px, assez grande pour un doigt. */
-  height: 36px;
-  /* Hauteur de 36 px. */
+.actions {
+/* Sélectionne la rangée de boutons sous chaque transaction (Modifier, Supprimer). */
+  grid-column: 1 / -1;
+  /* Étend la rangée sur toute la largeur de la ligne, sous les trois colonnes. */
+  display: flex;
+  /* Active la disposition flexible. */
+  flex-wrap: wrap;
+  /* Autorise le passage à la ligne si l'écran est étroit. */
+  align-items: center;
+  /* Centre verticalement les boutons. */
+  justify-content: flex-end;
+  /* Place les boutons à droite. */
+  gap: 8px;
+  /* Laisse 8 px entre les boutons. */
+  padding-top: 10px;
+  /* Ajoute 10 px d'espace au-dessus des boutons. */
+  border-top: 1px solid var(--ligne);
+  /* Trace une fine ligne de séparation au-dessus des boutons. */
+}
+/* Fin de la règle .actions. */
+
+.question {
+/* Sélectionne le texte de confirmation de suppression. */
+  margin-right: auto;
+  /* Pousse le texte tout à gauche, les boutons restent à droite. */
+  color: var(--depense);
+  /* Colore le texte en rouge rosé pour attirer l'attention. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
+}
+/* Fin de la règle .question. */
+
+.action {
+/* Sélectionne les boutons Modifier, Supprimer, Annuler et Oui. */
+  padding: 8px 14px;
+  /* Marge intérieure : 8 px en haut et en bas, 14 px sur les côtés (zone assez grande pour un doigt). */
   background: transparent;
   /* Fond transparent. */
-  color: var(--texte-doux);
-  /* Croix de couleur secondaire. */
-  border: 0;
-  /* Supprime la bordure par défaut. */
-  border-radius: 10px;
-  /* Arrondit les coins à 10 px. */
-  font-size: 18px;
-  /* Fixe la taille de la croix à 18 px. */
+  color: var(--texte);
+  /* Texte clair. */
+  border: 1px solid var(--ligne);
+  /* Bordure fine. */
+  border-radius: 999px;
+  /* Forme de pilule. */
+  font: inherit;
+  /* Reprend la police de la page. */
+  font-size: 13px;
+  /* Fixe la taille à 13 px. */
+  font-weight: 600;
+  /* Utilise une graisse semi-grasse. */
   cursor: pointer;
   /* Affiche une main au survol sur ordinateur. */
 }
-/* Fin de la règle .supprimer. */
+/* Fin de la règle .action. */
 
-.supprimer:hover {
-/* Sélectionne le bouton de suppression au survol. */
-  color: var(--depense);
-  /* Colore la croix en rouge rosé. */
+.action.modifier {
+/* Sélectionne le bouton Modifier. */
+  color: var(--neon);
+  /* Texte vert néon. */
+  border-color: var(--neon);
+  /* Bordure vert néon. */
 }
-/* Fin de la règle :hover du bouton supprimer. */
+/* Fin de la règle .action.modifier. */
+
+.action.danger {
+/* Sélectionne les boutons de suppression (Supprimer et Oui, supprimer). */
+  color: var(--depense);
+  /* Texte rouge rosé. */
+  border-color: var(--depense);
+  /* Bordure rouge rosé. */
+}
+/* Fin de la règle .action.danger. */
+
+.action.confirmer {
+/* Sélectionne le bouton "Oui, supprimer" de la confirmation. */
+  background: var(--depense);
+  /* Fond rouge rosé plein pour le distinguer de "Annuler". */
+  color: var(--noir);
+  /* Texte noir pour un bon contraste. */
+}
+/* Fin de la règle .action.confirmer. */
 
 .vide {
 /* Sélectionne le message affiché quand la liste est vide. */
@@ -792,8 +986,14 @@ input:focus-visible, select:focus-visible {
 
   <section class="carte" aria-label="Résumé">
   <!-- Ouvre la carte de résumé ; aria-label donne un nom à cette zone pour les lecteurs d'écran. -->
-    <p class="solde-libelle">Solde</p>
-    <!-- Libellé du grand montant : le solde est revenus moins dépenses. -->
+    <div class="solde-tete">
+    <!-- Ouvre la ligne qui contient "Solde" et le choix du mois. -->
+      <p class="solde-libelle">Solde</p>
+      <!-- Libellé du grand montant : le solde est revenus moins dépenses. -->
+      <select id="mois" class="choix-mois" aria-label="Période affichée"></select>
+      <!-- Liste déroulante des mois ; le JavaScript la remplit avec "Tous les mois" et les mois qui ont des transactions. -->
+    </div>
+    <!-- Ferme la ligne du solde. -->
     <p class="solde-montant" id="solde">0,00 MAD</p>
     <!-- Montant du solde ; le JavaScript le met à jour grâce à son identifiant "solde". -->
     <div class="duo">
@@ -819,10 +1019,19 @@ input:focus-visible, select:focus-visible {
   </section>
   <!-- Ferme la carte de résumé. -->
 
+  <section class="carte" id="carte-categories" aria-label="Dépenses par catégorie" hidden>
+  <!-- Ouvre la carte des dépenses par catégorie ; elle reste cachée tant qu'il n'y a aucune dépense à montrer. -->
+    <h2>Dépenses par catégorie</h2>
+    <!-- Titre de la carte. -->
+    <ul class="cat-liste" id="cat-liste"></ul>
+    <!-- Liste vide : le JavaScript y ajoute une ligne avec une barre pour chaque catégorie. -->
+  </section>
+  <!-- Ferme la carte des catégories. -->
+
   <form class="carte formulaire" id="formulaire">
-  <!-- Ouvre le formulaire d'ajout d'une transaction. -->
-    <h2>Nouvelle transaction</h2>
-    <!-- Titre du formulaire. -->
+  <!-- Ouvre le formulaire qui sert à ajouter ou à modifier une transaction. -->
+    <h2 id="titre-formulaire">Nouvelle transaction</h2>
+    <!-- Titre du formulaire ; le JavaScript le change en "Modifier la transaction" pendant une modification. -->
     <div class="bascule" role="radiogroup" aria-label="Type de transaction">
     <!-- Ouvre le sélecteur Dépense / Revenu ; role et aria-label décrivent le groupe aux lecteurs d'écran. -->
       <input type="radio" name="type" id="type-depense" value="depense" checked>
@@ -873,8 +1082,10 @@ input:focus-visible, select:focus-visible {
     <!-- Ferme le groupe de la note. -->
     <p class="erreur" id="erreur" role="alert" hidden></p>
     <!-- Zone de message d'erreur, cachée par défaut ; role="alert" fait lire le message par les lecteurs d'écran. -->
-    <button type="submit" class="bouton-principal">Ajouter</button>
-    <!-- Bouton qui envoie le formulaire (déclenche l'événement "submit" géré en JavaScript). -->
+    <button type="submit" class="bouton-principal" id="bouton-valider">Ajouter</button>
+    <!-- Bouton qui envoie le formulaire ; son texte devient "Enregistrer" pendant une modification. -->
+    <button type="button" class="bouton-secondaire" id="bouton-annuler" hidden>Annuler la modification</button>
+    <!-- Bouton qui abandonne la modification ; caché tant qu'on ne modifie rien. -->
   </form>
   <!-- Ferme le formulaire. -->
 
@@ -886,6 +1097,9 @@ input:focus-visible, select:focus-visible {
     <!-- Compteur d'opérations affichées, rempli par le JavaScript. -->
   </div>
   <!-- Ferme la barre de la liste. -->
+
+  <input type="search" id="recherche" placeholder="Rechercher une note ou une catégorie" aria-label="Rechercher une transaction" autocomplete="off">
+  <!-- Champ de recherche : la liste se filtre pendant la frappe. -->
 
   <div class="filtres" role="group" aria-label="Filtrer la liste">
   <!-- Ouvre le groupe de boutons de filtre. -->
@@ -909,6 +1123,9 @@ input:focus-visible, select:focus-visible {
     <!-- Bouton qui supprime toutes les lignes d'exemple. -->
   </div>
   <!-- Ferme l'encadré d'avis. -->
+
+  <button type="button" class="bouton-secondaire" id="exporter">Exporter en CSV (Excel)</button>
+  <!-- Bouton qui télécharge toutes les transactions dans un fichier ouvrable avec Excel ou Google Sheets. -->
 </main>
 <!-- Ferme le conteneur principal. -->
 
@@ -936,6 +1153,12 @@ const elRevenus = document.getElementById('total-revenus');
 // Récupère l'élément qui affiche le total des revenus.
 const elDepenses = document.getElementById('total-depenses');
 // Récupère l'élément qui affiche le total des dépenses.
+const elMois = document.getElementById('mois');
+// Récupère la liste déroulante des mois.
+const elCarteCategories = document.getElementById('carte-categories');
+// Récupère la carte des dépenses par catégorie.
+const elCategories = document.getElementById('cat-liste');
+// Récupère la liste où s'affichent les catégories.
 const elListe = document.getElementById('liste');
 // Récupère la liste où s'affichent les transactions.
 const elCompteur = document.getElementById('compteur');
@@ -944,8 +1167,16 @@ const elAvis = document.getElementById('avis');
 // Récupère l'encadré des données d'exemple.
 const elErreur = document.getElementById('erreur');
 // Récupère la zone du message d'erreur.
+const elRecherche = document.getElementById('recherche');
+// Récupère le champ de recherche.
 const formulaire = document.getElementById('formulaire');
-// Récupère le formulaire d'ajout.
+// Récupère le formulaire d'ajout et de modification.
+const elTitreFormulaire = document.getElementById('titre-formulaire');
+// Récupère le titre du formulaire.
+const boutonValider = document.getElementById('bouton-valider');
+// Récupère le bouton "Ajouter" / "Enregistrer".
+const boutonAnnuler = document.getElementById('bouton-annuler');
+// Récupère le bouton "Annuler la modification".
 const champMontant = document.getElementById('montant');
 // Récupère le champ du montant.
 const champCategorie = document.getElementById('categorie');
@@ -1029,8 +1260,16 @@ function sauver() {
 
 let transactions = charger() || exemples();
 // Prend les transactions enregistrées, ou les exemples s'il n'y a encore rien.
-let filtreActif = 'tous';
-// Mémorise le filtre choisi : "tous", "depense" ou "revenu".
+let filtreType = 'tous';
+// Mémorise le filtre de type choisi : "tous", "depense" ou "revenu".
+let moisChoisi = 'tous';
+// Mémorise le mois choisi au format AAAA-MM, ou "tous" pour afficher toutes les périodes.
+let texteRecherche = '';
+// Mémorise le texte tapé dans la recherche, en minuscules.
+let idEdition = null;
+// Mémorise l'identifiant de la transaction en cours de modification (null si on n'en modifie aucune).
+let idConfirmation = null;
+// Mémorise l'identifiant de la transaction dont la suppression attend une confirmation (null si aucune).
 
 function creer(balise, classe, texte) {
 // Déclare une fonction utilitaire qui crée un élément HTML.
@@ -1045,63 +1284,74 @@ function creer(balise, classe, texte) {
 }
 // Fin de la fonction creer.
 
-function creerLigne(t) {
-// Déclare une fonction qui construit la ligne HTML d'une transaction "t".
-  const estRevenu = t.type === 'revenu';
-  // Vaut vrai si la transaction est un revenu.
-  const li = creer('li', 'ligne ' + (estRevenu ? 'revenu' : 'depense'));
-  // Crée l'élément de liste, avec la classe de couleur correspondant au type.
-  const point = creer('span', 'point');
-  // Crée la pastille de couleur.
-  point.setAttribute('aria-hidden', 'true');
-  // Cache la pastille aux lecteurs d'écran, car elle est purement décorative.
-  const bloc = creer('div');
-  // Crée le bloc qui contient les deux lignes de texte.
-  bloc.style.minWidth = '0';
-  // Autorise le bloc à rétrécir pour que le texte long passe à la ligne.
-  const titre = creer('p', 'ligne-titre', t.note || t.categorie);
-  // Crée la première ligne : la note, ou la catégorie si aucune note n'a été saisie.
-  const date = new Date(t.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  // Convertit la date AAAA-MM-JJ en texte français court, par exemple "14 oct.".
-  const detail = creer('p', 'ligne-detail', t.categorie + ' · ' + date);
-  // Crée la seconde ligne : la catégorie suivie de la date.
-  if (t.exemple) detail.appendChild(creer('span', 'etiquette', 'exemple'));
-  // Si la transaction est un exemple, ajoute l'étiquette « exemple » à la fin de la ligne.
-  bloc.append(titre, detail);
-  // Place les deux lignes de texte dans le bloc.
-  const montant = creer('span', 'ligne-montant', (estRevenu ? '+' : '−') + ' ' + formatMonnaie.format(t.montant));
-  // Crée le montant, précédé de + pour un revenu ou de − pour une dépense.
-  const supprimer = creer('button', 'supprimer', '✕');
-  // Crée le bouton de suppression avec une croix.
-  supprimer.type = 'button';
+function creerBouton(texte, classe, action) {
+// Déclare une fonction utilitaire qui crée un bouton avec son texte, sa classe et l'action à faire au clic.
+  const bouton = creer('button', classe, texte);
+  // Crée le bouton avec son texte et sa classe.
+  bouton.type = 'button';
   // Précise que ce bouton n'envoie aucun formulaire.
-  supprimer.setAttribute('aria-label', 'Supprimer cette transaction');
-  // Donne un nom au bouton pour les lecteurs d'écran, car la croix seule n'est pas parlante.
-  supprimer.addEventListener('click', function () {
-  // Définit ce qui se passe quand on appuie sur le bouton.
-    transactions = transactions.filter(function (x) { return x.id !== t.id; });
-    // Garde toutes les transactions sauf celle dont l'identifiant correspond à la ligne supprimée.
-    sauver();
-    // Enregistre la nouvelle liste.
-    afficher();
-    // Met à jour l'écran (liste et totaux).
-  });
-  // Fin du gestionnaire de clic.
-  li.append(point, bloc, montant, supprimer);
-  // Assemble la ligne : pastille, texte, montant et bouton.
-  return li;
-  // Renvoie la ligne terminée.
+  bouton.addEventListener('click', action);
+  // Branche la fonction "action" sur le clic du bouton.
+  return bouton;
+  // Renvoie le bouton terminé.
 }
-// Fin de la fonction creerLigne.
+// Fin de la fonction creerBouton.
 
-function afficher() {
-// Déclare la fonction qui redessine les totaux et la liste.
+function nomMois(mois) {
+// Déclare une fonction qui transforme "2026-10" en "octobre 2026".
+  return new Date(mois + '-01T00:00:00').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+  // Crée la date du 1er du mois et l'écrit en toutes lettres, en français.
+}
+// Fin de la fonction nomMois.
+
+function dansPeriode(t) {
+// Déclare une fonction qui dit si une transaction appartient au mois choisi.
+  return moisChoisi === 'tous' || t.date.slice(0, 7) === moisChoisi;
+  // Vrai si tous les mois sont affichés, ou si les 7 premiers caractères de la date (AAAA-MM) correspondent au mois choisi.
+}
+// Fin de la fonction dansPeriode.
+
+function remplirMois() {
+// Déclare la fonction qui remplit la liste déroulante des mois.
+  const mois = Array.from(new Set(transactions.map(function (t) { return t.date.slice(0, 7); })));
+  // Prend le mois (AAAA-MM) de chaque transaction et supprime les doublons.
+  mois.sort().reverse();
+  // Trie les mois du plus récent au plus ancien.
+  if (moisChoisi !== 'tous' && mois.indexOf(moisChoisi) === -1) moisChoisi = 'tous';
+  // Si le mois choisi n'existe plus (après une suppression, par exemple), revient à "tous les mois".
+  elMois.replaceChildren();
+  // Vide la liste déroulante avant de la reconstruire.
+  const tous = creer('option', '', 'Tous les mois');
+  // Crée la première option, "Tous les mois".
+  tous.value = 'tous';
+  // Donne à cette option la valeur "tous".
+  elMois.appendChild(tous);
+  // Ajoute l'option à la liste.
+  for (const m of mois) {
+  // Parcourt chaque mois trouvé.
+    const option = creer('option', '', nomMois(m));
+    // Crée une option qui affiche le mois en toutes lettres.
+    option.value = m;
+    // Donne à l'option la valeur AAAA-MM.
+    elMois.appendChild(option);
+    // Ajoute l'option à la liste.
+  }
+  // Fin de la boucle sur les mois.
+  elMois.value = moisChoisi;
+  // Sélectionne dans la liste le mois actuellement choisi.
+}
+// Fin de la fonction remplirMois.
+
+function afficherResume() {
+// Déclare la fonction qui calcule et affiche le solde et les totaux de la période choisie.
   let revenus = 0;
   // Compteur du total des revenus, qui part de zéro.
   let depenses = 0;
   // Compteur du total des dépenses, qui part de zéro.
   for (const t of transactions) {
   // Parcourt chaque transaction, une par une.
+    if (!dansPeriode(t)) continue;
+    // Ignore les transactions qui ne sont pas dans le mois choisi.
     if (t.type === 'revenu') {
     // Si c'est un revenu...
       revenus += t.montant;
@@ -1124,10 +1374,157 @@ function afficher() {
   // Affiche le solde au format monétaire.
   elSolde.classList.toggle('negatif', solde < 0);
   // Ajoute la classe "negatif" (couleur rose) si le solde est inférieur à zéro, la retire sinon.
+}
+// Fin de la fonction afficherResume.
+
+function afficherCategories() {
+// Déclare la fonction qui affiche les dépenses de la période, regroupées par catégorie.
+  const totaux = {};
+  // Crée un objet vide qui contiendra le total de chaque catégorie.
+  let somme = 0;
+  // Compteur du total de toutes les dépenses, pour calculer les pourcentages.
+  for (const t of transactions) {
+  // Parcourt chaque transaction.
+    if (t.type !== 'depense' || !dansPeriode(t)) continue;
+    // Ignore les revenus et les transactions hors période.
+    totaux[t.categorie] = (totaux[t.categorie] || 0) + t.montant;
+    // Ajoute le montant au total de sa catégorie (en partant de zéro si c'est la première).
+    somme += t.montant;
+    // Ajoute le montant au total général des dépenses.
+  }
+  // Fin de la boucle.
+  const noms = Object.keys(totaux).sort(function (a, b) { return totaux[b] - totaux[a]; });
+  // Liste les catégories de la plus dépensée à la moins dépensée.
+  elCarteCategories.hidden = noms.length === 0;
+  // Cache la carte s'il n'y a aucune dépense à montrer.
+  elCategories.replaceChildren();
+  // Vide la liste avant de la reconstruire.
+  for (const nom of noms) {
+  // Parcourt chaque catégorie, de la plus grosse à la plus petite.
+    const pourcent = Math.round((totaux[nom] / somme) * 100);
+    // Calcule la part de cette catégorie dans les dépenses, arrondie en pourcentage entier.
+    const li = creer('li');
+    // Crée l'élément de liste de la catégorie.
+    const texte = creer('div', 'cat-texte');
+    // Crée la ligne qui contient le nom et le montant.
+    texte.append(creer('span', '', nom), creer('span', 'cat-montant', formatMonnaie.format(totaux[nom]) + ' · ' + pourcent + ' %'));
+    // Ajoute le nom à gauche, puis le montant et le pourcentage à droite.
+    const piste = creer('div', 'cat-piste');
+    // Crée le fond de la barre de progression.
+    const barre = creer('div', 'cat-barre');
+    // Crée la barre colorée.
+    barre.style.width = pourcent + '%';
+    // Fixe la largeur de la barre égale au pourcentage de la catégorie.
+    piste.appendChild(barre);
+    // Place la barre colorée dans son fond.
+    li.append(texte, piste);
+    // Place la ligne de texte et la barre dans l'élément de liste.
+    elCategories.appendChild(li);
+    // Ajoute la catégorie à la liste.
+  }
+  // Fin de la boucle sur les catégories.
+}
+// Fin de la fonction afficherCategories.
+
+function creerLigne(t) {
+// Déclare une fonction qui construit la ligne HTML d'une transaction "t".
+  const estRevenu = t.type === 'revenu';
+  // Vaut vrai si la transaction est un revenu.
+  const li = creer('li', 'ligne ' + (estRevenu ? 'revenu' : 'depense'));
+  // Crée l'élément de liste, avec la classe de couleur correspondant au type.
+  if (t.id === idEdition) li.classList.add('en-edition');
+  // Si cette transaction est celle qu'on modifie, ajoute la classe qui colore sa bordure en vert.
+  const point = creer('span', 'point');
+  // Crée la pastille de couleur.
+  point.setAttribute('aria-hidden', 'true');
+  // Cache la pastille aux lecteurs d'écran, car elle est purement décorative.
+  const bloc = creer('div');
+  // Crée le bloc qui contient les deux lignes de texte.
+  bloc.style.minWidth = '0';
+  // Autorise le bloc à rétrécir pour que le texte long passe à la ligne.
+  const titre = creer('p', 'ligne-titre', t.note || t.categorie);
+  // Crée la première ligne : la note, ou la catégorie si aucune note n'a été saisie.
+  const date = new Date(t.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  // Convertit la date AAAA-MM-JJ en texte français court, par exemple "14 oct.".
+  const detail = creer('p', 'ligne-detail', t.categorie + ' · ' + date);
+  // Crée la seconde ligne : la catégorie suivie de la date.
+  if (t.exemple) detail.appendChild(creer('span', 'etiquette', 'exemple'));
+  // Si la transaction est un exemple, ajoute l'étiquette « exemple » à la fin de la ligne.
+  bloc.append(titre, detail);
+  // Place les deux lignes de texte dans le bloc.
+  const montant = creer('span', 'ligne-montant', (estRevenu ? '+' : '−') + ' ' + formatMonnaie.format(t.montant));
+  // Crée le montant, précédé de + pour un revenu ou de − pour une dépense.
+  const actions = creer('div', 'actions');
+  // Crée la rangée de boutons située sous la transaction.
+  if (t.id === idConfirmation) {
+  // Si l'utilisateur vient d'appuyer sur "Supprimer" pour cette transaction...
+    actions.appendChild(creer('span', 'question', 'Supprimer cette transaction ?'));
+    // ...affiche la question de confirmation...
+    actions.appendChild(creerBouton('Annuler', 'action', function () {
+    // ...puis un bouton "Annuler" dont voici l'action :
+      idConfirmation = null;
+      // Oublie la demande de suppression.
+      afficher();
+      // Redessine l'écran : la ligne retrouve ses boutons normaux.
+    }));
+    // Fin du bouton Annuler.
+    actions.appendChild(creerBouton('Oui, supprimer', 'action danger confirmer', function () {
+    // ...puis un bouton "Oui, supprimer" dont voici l'action :
+      transactions = transactions.filter(function (x) { return x.id !== t.id; });
+      // Garde toutes les transactions sauf celle dont l'identifiant correspond à la ligne supprimée.
+      idConfirmation = null;
+      // Oublie la demande de suppression, désormais terminée.
+      if (idEdition === t.id) sortirEdition();
+      // Si on était en train de modifier cette transaction, quitte le mode modification.
+      sauver();
+      // Enregistre la nouvelle liste.
+      afficher();
+      // Met à jour l'écran (liste et totaux).
+    }));
+    // Fin du bouton "Oui, supprimer".
+  } else {
+  // Sinon, affiche les deux boutons habituels.
+    actions.appendChild(creerBouton('Modifier', 'action modifier', function () {
+    // Crée le bouton "Modifier" dont voici l'action :
+      idConfirmation = null;
+      // Annule toute demande de suppression en cours.
+      entrerEdition(t);
+      // Charge la transaction dans le formulaire.
+    }));
+    // Fin du bouton Modifier.
+    actions.appendChild(creerBouton('Supprimer', 'action danger', function () {
+    // Crée le bouton "Supprimer" dont voici l'action :
+      idConfirmation = t.id;
+      // Mémorise que cette transaction attend une confirmation (rien n'est supprimé pour l'instant).
+      afficher();
+      // Redessine l'écran : la ligne affiche la question de confirmation.
+    }));
+    // Fin du bouton Supprimer.
+  }
+  // Fin du choix entre confirmation et boutons habituels.
+  li.append(point, bloc, montant, actions);
+  // Assemble la ligne : pastille, texte, montant et rangée de boutons.
+  return li;
+  // Renvoie la ligne terminée.
+}
+// Fin de la fonction creerLigne.
+
+function afficherListe() {
+// Déclare la fonction qui redessine la liste des transactions.
   const visibles = transactions
   // Part de la liste complète des transactions pour préparer celles à afficher.
-    .filter(function (t) { return filtreActif === 'tous' || t.type === filtreActif; })
-    // Garde toutes les transactions si le filtre est "tous", sinon seulement celles du type choisi.
+    .filter(function (t) {
+    // Garde seulement les transactions qui passent les trois filtres.
+      if (!dansPeriode(t)) return false;
+      // Rejette celles qui sont hors du mois choisi.
+      if (filtreType !== 'tous' && t.type !== filtreType) return false;
+      // Rejette celles dont le type ne correspond pas au filtre Dépenses / Revenus.
+      if (texteRecherche && (t.note + ' ' + t.categorie).toLowerCase().indexOf(texteRecherche) === -1) return false;
+      // Rejette celles dont la note et la catégorie ne contiennent pas le texte recherché.
+      return true;
+      // Garde toutes les autres.
+    })
+    // Fin du filtre.
     .sort(function (a, b) { return b.date.localeCompare(a.date) || b.id - a.id; });
     // Trie de la plus récente à la plus ancienne ; à date égale, la dernière ajoutée passe en premier.
   elCompteur.textContent = visibles.length + (visibles.length > 1 ? ' opérations' : ' opération');
@@ -1136,7 +1533,7 @@ function afficher() {
   // Vide la liste avant de la reconstruire.
   if (visibles.length === 0) {
   // Si aucune transaction n'est à afficher...
-    elListe.appendChild(creer('li', 'vide', 'Aucune transaction pour le moment.'));
+    elListe.appendChild(creer('li', 'vide', 'Aucune transaction à afficher.'));
     // ...affiche un message d'information.
   }
   // Fin du test de liste vide.
@@ -1146,6 +1543,19 @@ function afficher() {
     // Construit sa ligne et l'ajoute à la liste.
   }
   // Fin de la boucle d'affichage.
+}
+// Fin de la fonction afficherListe.
+
+function afficher() {
+// Déclare la fonction qui redessine tout l'écran.
+  remplirMois();
+  // Met à jour la liste des mois.
+  afficherResume();
+  // Met à jour le solde et les totaux.
+  afficherCategories();
+  // Met à jour les dépenses par catégorie.
+  afficherListe();
+  // Met à jour la liste des transactions.
   elAvis.hidden = !transactions.some(function (t) { return t.exemple; });
   // Montre l'encadré d'avis seulement s'il reste au moins une transaction d'exemple.
 }
@@ -1179,6 +1589,64 @@ function montrerErreur(message) {
 }
 // Fin de la fonction montrerErreur.
 
+function entrerEdition(t) {
+// Déclare la fonction qui met une transaction dans le formulaire pour la modifier.
+  idEdition = t.id;
+  // Mémorise l'identifiant de la transaction modifiée.
+  document.getElementById(t.type === 'revenu' ? 'type-revenu' : 'type-depense').checked = true;
+  // Coche le bouton radio qui correspond au type de la transaction.
+  remplirCategories();
+  // Recharge la liste des catégories pour ce type.
+  champCategorie.value = t.categorie;
+  // Sélectionne la catégorie de la transaction.
+  champMontant.value = t.montant;
+  // Remplit le champ du montant.
+  champDate.value = t.date;
+  // Remplit le champ de la date.
+  champNote.value = t.note || '';
+  // Remplit le champ de la note (vide s'il n'y en a pas).
+  elTitreFormulaire.textContent = 'Modifier la transaction';
+  // Change le titre du formulaire.
+  boutonValider.textContent = 'Enregistrer';
+  // Change le texte du bouton principal.
+  boutonAnnuler.hidden = false;
+  // Montre le bouton "Annuler la modification".
+  formulaire.classList.add('mode-edition');
+  // Ajoute la classe qui entoure le formulaire de vert.
+  montrerErreur('');
+  // Efface un éventuel message d'erreur.
+  afficher();
+  // Redessine la liste pour repérer la ligne en cours de modification.
+  formulaire.scrollIntoView({ block: 'start' });
+  // Fait défiler la page jusqu'au formulaire, pour qu'on le voie tout de suite.
+  champMontant.focus({ preventScroll: true });
+  // Place le curseur dans le champ du montant sans refaire défiler la page.
+}
+// Fin de la fonction entrerEdition.
+
+function sortirEdition() {
+// Déclare la fonction qui quitte le mode modification et remet le formulaire à zéro.
+  idEdition = null;
+  // Oublie la transaction modifiée.
+  elTitreFormulaire.textContent = 'Nouvelle transaction';
+  // Remet le titre d'origine.
+  boutonValider.textContent = 'Ajouter';
+  // Remet le texte d'origine du bouton principal.
+  boutonAnnuler.hidden = true;
+  // Cache le bouton "Annuler la modification".
+  formulaire.classList.remove('mode-edition');
+  // Retire la bordure verte du formulaire.
+  champMontant.value = '';
+  // Vide le champ du montant.
+  champNote.value = '';
+  // Vide le champ de la note.
+  champDate.value = aujourdhui();
+  // Remet la date du jour.
+  montrerErreur('');
+  // Efface un éventuel message d'erreur.
+}
+// Fin de la fonction sortirEdition.
+
 document.querySelectorAll('input[name="type"]').forEach(function (radio) {
 // Pour chacun des deux boutons radio Dépense / Revenu...
   radio.addEventListener('change', remplirCategories);
@@ -1210,40 +1678,97 @@ formulaire.addEventListener('submit', function (evenement) {
   // Fin du test de la date.
   montrerErreur('');
   // Efface un éventuel message d'erreur précédent.
-  transactions.push({
-  // Ajoute une nouvelle transaction à la fin du tableau.
-    id: Date.now(),
-    // Identifiant unique : le nombre de millisecondes écoulées depuis 1970.
-    type: document.querySelector('input[name="type"]:checked').value,
-    // Type choisi : "depense" ou "revenu".
-    montant: montant,
-    // Montant arrondi.
-    categorie: champCategorie.value,
-    // Catégorie sélectionnée.
-    date: champDate.value,
-    // Date saisie, au format AAAA-MM-JJ.
-    note: champNote.value.trim()
-    // Note saisie, sans les espaces au début et à la fin.
-  });
-  // Fin de l'ajout de la transaction.
+  const type = document.querySelector('input[name="type"]:checked').value;
+  // Lit le type choisi : "depense" ou "revenu".
+  if (idEdition !== null) {
+  // Si on est en mode modification...
+    const existante = transactions.find(function (x) { return x.id === idEdition; });
+    // ...retrouve la transaction concernée dans la liste.
+    if (existante) {
+    // Si elle existe encore...
+      existante.type = type;
+      // ...met à jour son type...
+      existante.montant = montant;
+      // ...son montant...
+      existante.categorie = champCategorie.value;
+      // ...sa catégorie...
+      existante.date = champDate.value;
+      // ...sa date...
+      existante.note = champNote.value.trim();
+      // ...sa note...
+      existante.exemple = false;
+      // ...et retire l'étiquette « exemple », car elle est maintenant écrite par l'utilisateur.
+    }
+    // Fin du test d'existence.
+    sortirEdition();
+    // Quitte le mode modification et vide le formulaire.
+  } else {
+  // Sinon, on ajoute une nouvelle transaction...
+    transactions.push({
+    // ...à la fin du tableau.
+      id: Date.now(),
+      // Identifiant unique : le nombre de millisecondes écoulées depuis 1970.
+      type: type,
+      // Type choisi.
+      montant: montant,
+      // Montant arrondi.
+      categorie: champCategorie.value,
+      // Catégorie sélectionnée.
+      date: champDate.value,
+      // Date saisie, au format AAAA-MM-JJ.
+      note: champNote.value.trim()
+      // Note saisie, sans les espaces au début et à la fin.
+    });
+    // Fin de l'ajout de la transaction.
+    champMontant.value = '';
+    // Vide le champ du montant.
+    champNote.value = '';
+    // Vide le champ de la note.
+    champMontant.focus();
+    // Replace le curseur dans le champ du montant pour saisir la suite rapidement.
+  }
+  // Fin du choix entre modification et ajout.
   sauver();
   // Enregistre la liste mise à jour.
   afficher();
-  // Met à jour l'écran (liste et totaux).
-  champMontant.value = '';
-  // Vide le champ du montant.
-  champNote.value = '';
-  // Vide le champ de la note.
-  champMontant.focus();
-  // Replace le curseur dans le champ du montant pour saisir la suite rapidement.
+  // Met à jour l'écran (liste, totaux et catégories).
 });
 // Fin du gestionnaire de soumission.
+
+boutonAnnuler.addEventListener('click', function () {
+// Définit ce qui se passe quand on appuie sur "Annuler la modification".
+  sortirEdition();
+  // Quitte le mode modification et vide le formulaire.
+  afficher();
+  // Redessine la liste pour retirer le repère vert.
+});
+// Fin du gestionnaire.
+
+elMois.addEventListener('change', function () {
+// Définit ce qui se passe quand on choisit un autre mois.
+  moisChoisi = elMois.value;
+  // Mémorise le mois choisi.
+  idConfirmation = null;
+  // Annule toute demande de suppression en cours.
+  afficher();
+  // Redessine l'écran pour cette période.
+});
+// Fin du gestionnaire.
+
+elRecherche.addEventListener('input', function () {
+// Définit ce qui se passe à chaque lettre tapée dans la recherche.
+  texteRecherche = elRecherche.value.trim().toLowerCase();
+  // Mémorise le texte, sans espaces autour et en minuscules pour ignorer la casse.
+  afficherListe();
+  // Redessine seulement la liste, car les totaux ne dépendent pas de la recherche.
+});
+// Fin du gestionnaire.
 
 document.querySelectorAll('.puce').forEach(function (puce) {
 // Pour chaque bouton de filtre...
   puce.addEventListener('click', function () {
   // ...définit ce qui se passe au clic.
-    filtreActif = puce.dataset.filtre;
+    filtreType = puce.dataset.filtre;
     // Mémorise le filtre choisi, lu dans l'attribut data-filtre du bouton.
     document.querySelectorAll('.puce').forEach(function (autre) {
     // Parcourt tous les boutons de filtre...
@@ -1251,7 +1776,7 @@ document.querySelectorAll('.puce').forEach(function (puce) {
       // ...et marque comme "enfoncé" uniquement celui sur lequel on vient de cliquer.
     });
     // Fin de la boucle sur les boutons.
-    afficher();
+    afficherListe();
     // Redessine la liste avec le nouveau filtre.
   });
   // Fin du gestionnaire de clic.
@@ -1262,12 +1787,51 @@ document.getElementById('effacer-exemples').addEventListener('click', function (
 // Définit ce qui se passe quand on appuie sur "Effacer les exemples".
   transactions = transactions.filter(function (t) { return !t.exemple; });
   // Garde uniquement les transactions qui ne sont pas des exemples.
+  if (idEdition !== null && !transactions.some(function (t) { return t.id === idEdition; })) sortirEdition();
+  // Si la transaction en cours de modification vient d'être effacée, quitte le mode modification.
   sauver();
   // Enregistre la liste nettoyée (même vide, pour que les exemples ne reviennent pas).
   afficher();
   // Met à jour l'écran.
 });
 // Fin du gestionnaire.
+
+document.getElementById('exporter').addEventListener('click', function () {
+// Définit ce qui se passe quand on appuie sur "Exporter en CSV".
+  const lignes = ['Date;Type;Catégorie;Note;Montant'];
+  // Crée la liste des lignes du fichier, en commençant par la ligne des titres de colonnes.
+  const triees = transactions.slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+  // Fait une copie des transactions triée de la plus ancienne à la plus récente.
+  for (const t of triees) {
+  // Parcourt chaque transaction.
+    const note = '"' + String(t.note || '').replace(/"/g, '""') + '"';
+    // Met la note entre guillemets et double les guillemets qu'elle contient, comme l'exige le format CSV.
+    const montant = (t.type === 'depense' ? -t.montant : t.montant).toFixed(2).replace('.', ',');
+    // Écrit le montant avec une virgule décimale, négatif pour une dépense.
+    lignes.push([t.date, t.type === 'revenu' ? 'Revenu' : 'Dépense', t.categorie, note, montant].join(';'));
+    // Assemble les colonnes avec des points-virgules (le séparateur qu'Excel en français attend) et ajoute la ligne.
+  }
+  // Fin de la boucle.
+  const blob = new Blob(['﻿' + lignes.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  // Crée le fichier en mémoire ; le caractère ﻿ au début aide Excel à lire correctement les accents.
+  const adresse = URL.createObjectURL(blob);
+  // Crée une adresse temporaire qui pointe vers ce fichier.
+  const lien = document.createElement('a');
+  // Crée un lien invisible.
+  lien.href = adresse;
+  // Fait pointer le lien vers le fichier.
+  lien.download = 'budget-neon.csv';
+  // Indique le nom du fichier à télécharger.
+  document.body.appendChild(lien);
+  // Ajoute le lien à la page, car certains navigateurs l'exigent pour le clic.
+  lien.click();
+  // Simule un clic sur le lien, ce qui lance le téléchargement.
+  lien.remove();
+  // Retire le lien de la page.
+  setTimeout(function () { URL.revokeObjectURL(adresse); }, 1000);
+  // Une seconde plus tard, libère la mémoire utilisée par le fichier temporaire.
+});
+// Fin du gestionnaire d'export.
 
 champDate.value = aujourdhui();
 // Pré-remplit le champ date avec la date du jour.
@@ -1276,7 +1840,7 @@ remplirCategories();
 afficher();
 // Dessine l'écran une première fois au chargement de la page.
 </script>
-<!-- Ferme le bloc JavaScript : fin du fichier. -->
+<!-- Ferme le premier bloc JavaScript. -->
 
 <script>
 // Ouvre un second bloc JavaScript, dédié au fonctionnement hors connexion.

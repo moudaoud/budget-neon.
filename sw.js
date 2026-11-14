@@ -1,7 +1,7 @@
 // Service worker : un petit programme que le téléphone garde en arrière-plan pour faire marcher l'application sans connexion.
 
-const NOM_CACHE = 'budget-neon-v1';
-// Nom de la boîte de stockage des fichiers ; changer ce numéro de version force la mise à jour chez l'utilisateur.
+const NOM_CACHE = 'budget-neon-v2';
+// Nom de la boîte de stockage des fichiers ; le passage de v1 à v2 force le téléphone à récupérer la nouvelle version.
 
 const FICHIERS = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 // Liste des fichiers à mémoriser dès l'installation pour pouvoir ouvrir l'application hors ligne.
@@ -54,22 +54,20 @@ self.addEventListener('fetch', function (evenement) {
   // Ignore les demandes qui ne sont pas de simples lectures : on ne s'en occupe pas.
   evenement.respondWith(
   // Fournit nous-mêmes la réponse à cette demande.
-    caches.match(evenement.request).then(function (enCache) {
-    // Cherche d'abord le fichier demandé dans nos boîtes de stockage.
-      if (enCache) return enCache;
-      // S'il est déjà mémorisé, le renvoie immédiatement, même sans connexion.
-      return fetch(evenement.request).then(function (reponse) {
-      // Sinon, le télécharge depuis Internet.
-        const copie = reponse.clone();
-        // Fait une copie de la réponse, car une réponse ne peut être lue qu'une seule fois.
-        caches.open(NOM_CACHE).then(function (cache) { cache.put(evenement.request, copie); });
-        // Range la copie dans la boîte de stockage pour la prochaine fois (par exemple les polices Google).
-        return reponse;
-        // Renvoie la réponse d'origine à la page.
-      });
-      // Fin du téléchargement.
+    fetch(evenement.request).then(function (reponse) {
+    // Essaie d'abord de télécharger le fichier depuis Internet, pour toujours avoir la dernière version.
+      const copie = reponse.clone();
+      // Fait une copie de la réponse, car une réponse ne peut être lue qu'une seule fois.
+      caches.open(NOM_CACHE).then(function (cache) { cache.put(evenement.request, copie); });
+      // Range la copie dans la boîte de stockage pour les moments sans connexion.
+      return reponse;
+      // Renvoie la réponse d'origine à la page.
+    }).catch(function () {
+    // Si le téléchargement échoue (pas de connexion)...
+      return caches.match(evenement.request);
+      // ...renvoie la copie mémorisée lors de la dernière visite.
     })
-    // Fin de la recherche dans le cache.
+    // Fin du téléchargement avec solution de secours.
   );
   // Fin de la réponse fournie.
 });
